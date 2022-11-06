@@ -1,0 +1,15 @@
+[Unit]
+Description=BattleTrace.Api
+After=network-online.target
+
+[Service]
+User=tera
+Type=notify
+SyslogIdentifier=trace
+WorkingDirectory=/opt/battletrace/bin/current
+ExecStart=/opt/battletrace/bin/current/BattleTrace.Api
+Restart=always
+Environment="ASPNETCORE_ENVIRONMENT=Development"
+
+[Install]
+WantedBy=multi-user.target

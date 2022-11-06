@@ -1,0 +1,68 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Add Github Packages NuGet feed
+        run: >
+          dotnet nuget add source
+          --username $GITHUB_REPOSITORY_OWNER
+          --password ${{ secrets.PAT }}
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json"
+
+      - name: Restore dependencies
+        run: dotnet restore -r linux-x64
+
+      - name: Build
+        run: >
+          dotnet publish BattleTrace.Api
+          --no-restore -c Release -r linux-x64 --self-contained false -o bin/publish/
+          -p:GenerateDocumentationFile=false
+          -p:PublishSingleFile=true
+          -p:DebugType=None
+
+      - name: SSH Config
+        run: |
+          mkdir -p ~/.ssh
+          echo "$key" > ~/.ssh/id
+          chmod 600 ~/.ssh/id
+          cat >> ~/.ssh/config << EOF
+          Host deploy
+              HostName $host
+              User $user
+              IdentityFile ~/.ssh/id
+          EOF
+          ssh-keyscan -H $host >> ~/.ssh/known_hosts
+
+      - name: Upload
+        run: rsync -avzh --chown=$user:$user bin/publish deploy:/opt/battletrace/bin
+
+      - name: Deploy
+        run: ssh deploy 'cd /opt/battletrace/ && bash -s' < deploy.sh
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  host: do.teraa.dev
+  user: tera
+  key: ${{ secrets.SSH_KEY }}
