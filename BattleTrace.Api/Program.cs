@@ -41,7 +41,7 @@ builder.Services
             .GetRequiredService<IOptionsMonitor<DbOptions>>()
             .CurrentValue;
 
-        options.UseNpgsql(dbOptions.ConnectionString, contextOptions =>
+        options.UseSqlite(dbOptions.ConnectionString, contextOptions =>
         {
             contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         });

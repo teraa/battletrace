@@ -19,7 +19,7 @@ internal class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbCon
         var dbOptions = config.GetOptions<DbOptions>();
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseNpgsql(dbOptions.ConnectionString,
+            .UseSqlite(dbOptions.ConnectionString,
                 contextOptions =>
                 {
                     contextOptions.MigrationsAssembly(typeof(Program).Assembly.FullName);
