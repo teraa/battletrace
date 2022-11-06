@@ -1,3 +1,4 @@
+using BattleTrace.Api.Initializers;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ builder.Host
 
 builder.Services
     .AddAsyncInitialization()
+    .AddAsyncInitializer<MigrationInitializer>()
     .AddControllers(options =>
     {
         options.ModelValidatorProviders.Clear();
