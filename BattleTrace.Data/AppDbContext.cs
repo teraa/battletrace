@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+#pragma warning disable CS8618
 namespace BattleTrace.Data;
 
 public partial class AppDbContext : DbContext
