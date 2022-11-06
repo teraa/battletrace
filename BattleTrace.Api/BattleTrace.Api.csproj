@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BattleTrace.Data\BattleTrace.Data.csproj" />
+    <ProjectReference Include="..\Extensions\AspNetCore\AspNetCore.csproj" />
+    <ProjectReference Include="..\Extensions\Configuration\Configuration.csproj" />
   </ItemGroup>
 
 </Project>
