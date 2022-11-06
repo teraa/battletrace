@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Index = BattleTrace.Api.Features.Servers.Actions.Index;
 
 namespace BattleTrace.Api.Features.Servers;
 
@@ -15,6 +16,6 @@ public class ServersController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Index(CancellationToken cancellationToken)
-        => Ok("Hi");
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        => await _sender.Send(new Index.Query(), cancellationToken);
 }
