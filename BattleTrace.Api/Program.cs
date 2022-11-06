@@ -1,3 +1,4 @@
+using BattleTrace.Api.Features.Servers;
 using BattleTrace.Api.Initializers;
 using FluentValidation;
 using MediatR;
@@ -57,6 +58,8 @@ builder.Services
     .AddHttpClient()
     .AddHttpContextAccessor()
     .AddOptionsWithValidation<DbOptions>()
+    .AddOptionsWithValidation<FetcherOptions>()
+    .AddHostedService<FetcherService>()
     ;
 
 var app = builder.Build();
