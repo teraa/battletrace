@@ -3,6 +3,7 @@ using BattleTrace.Api.Options;
 using BattleTrace.Data;
 using JetBrains.Annotations;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace BattleTrace.Api.Features.Servers;
@@ -65,6 +66,23 @@ public static class Fetch
 
                 requestIndex++;
             } while (requestIndex < lastSuccessfulIndex + _options.Threshold);
+
+            var now = DateTimeOffset.UtcNow;
+
+            var serversToUpdate = await _ctx.Servers
+                .Where(x => servers.Keys.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+
+            _ctx.Servers.RemoveRange(serversToUpdate);
+
+            _ctx.Servers.AddRange(servers.Values.Select(x => new Data.Models.Server
+            {
+                Id = x.Guid,
+                Name = x.Name,
+                UpdatedAt = now
+            }));
+
+            await _ctx.SaveChangesAsync(cancellationToken);
         }
 
 
