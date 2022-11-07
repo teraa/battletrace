@@ -5,16 +5,17 @@ using JetBrains.Annotations;
 namespace BattleTrace.Api.Options;
 
 #pragma warning disable CS8618
-public class DbOptions
+public class SeqOptions
 {
-    public string ConnectionString { get; init; } = "Data Source=data.db";
+    public Uri ServerUrl { get; init; } = new("http://localhost:5341");
+    public string? ApiKey { get; init; }
 
     [UsedImplicitly]
-    public class Validator : AbstractValidator<DbOptions>
+    public class Validator : AbstractValidator<SeqOptions>
     {
         public Validator()
         {
-            RuleFor(x => x.ConnectionString).NotEmpty();
+            RuleFor(x => x.ServerUrl).NotEmpty();
         }
     }
 }

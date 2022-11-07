@@ -12,10 +12,7 @@ Restart=always
 Environment="ASPNETCORE_ENVIRONMENT=Production"
 Environment="URLS=http://localhost:5052"
 Environment="Db__ConnectionString=Data Source=/opt/battletrace/data.db"
-Environment="Serilog__WriteTo__Console__Args__outputTemplate=<{SyslogSeverity}>{SourceContext}: {Message:j}{NewLine}"
-Environment="Serilog__WriteTo__Seq__Name=Seq"
-Environment="Serilog__WriteTo__Seq__Args__serverUrl=http://localhost:5341"
-Environment="Serilog__WriteTo__Seq__Args__apiKey=x"
+Environment="Seq__ApiKey=x"
 
 [Install]
 WantedBy=multi-user.target
