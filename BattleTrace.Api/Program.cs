@@ -61,7 +61,7 @@ builder.Services
     .AddHttpClient()
     .AddHttpContextAccessor()
     .AddOptionsWithValidation<DbOptions>()
-    .AddOptionsWithValidation<FetcherOptions>()
+    .AddOptionsWithValidation<ServerFetcherOptions>()
     .AddHostedService<FetcherService>()
     ;
 

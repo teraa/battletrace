@@ -12,7 +12,7 @@ public class FetcherService : BackgroundService
 
     public FetcherService(
         IServiceScopeFactory scopeFactory,
-        IOptions<FetcherOptions> options,
+        IOptions<ServerFetcherOptions> options,
         ILogger<FetcherService> logger)
     {
         _scopeFactory = scopeFactory;

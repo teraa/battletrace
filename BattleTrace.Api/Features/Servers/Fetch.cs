@@ -15,13 +15,13 @@ public static class Fetch
     [UsedImplicitly]
     public class Handler : AsyncRequestHandler<Command>
     {
-        private readonly FetcherOptions _options;
+        private readonly ServerFetcherOptions _options;
         private readonly AppDbContext _ctx;
         private readonly ILogger<Handler> _logger;
         private readonly HttpClient _client;
 
         public Handler(
-            IOptionsMonitor<FetcherOptions> options,
+            IOptionsMonitor<ServerFetcherOptions> options,
             AppDbContext ctx,
             ILogger<Handler> logger,
             HttpClient client)

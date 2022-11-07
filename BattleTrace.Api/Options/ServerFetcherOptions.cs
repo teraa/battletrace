@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace BattleTrace.Api.Options;
 
 #pragma warning disable CS8618
-public class FetcherOptions
+public class ServerFetcherOptions
 {
     public TimeSpan Interval { get; init; } = TimeSpan.FromHours(12);
     public TimeSpan Delay { get; init; } = TimeSpan.FromSeconds(0.5);
@@ -13,7 +13,7 @@ public class FetcherOptions
     public int Threshold { get; init; } = 10;
 
     [UsedImplicitly]
-    public class Validator : AbstractValidator<FetcherOptions>
+    public class Validator : AbstractValidator<ServerFetcherOptions>
     {
         public Validator()
         {
