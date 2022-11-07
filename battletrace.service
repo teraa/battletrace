@@ -10,6 +10,9 @@ WorkingDirectory=/opt/battletrace/bin/current
 ExecStart=/opt/battletrace/bin/current/BattleTrace.Api
 Restart=always
 Environment="ASPNETCORE_ENVIRONMENT=Development"
+#Environment="Serilog__WriteTo__Seq__Name=Seq"
+#Environment="Serilog__WriteTo__Seq__Args__serverUrl=x"
+#Environment="Serilog__WriteTo__Seq__Args__apiKey=x"
 
 [Install]
 WantedBy=multi-user.target
