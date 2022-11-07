@@ -10,7 +10,7 @@ WorkingDirectory=/opt/battletrace/bin/current
 ExecStart=/opt/battletrace/bin/current/BattleTrace.Api
 Restart=always
 Environment="ASPNETCORE_ENVIRONMENT=Production"
-Environment="ASPNETCORE_URLS=http://localhost:5052"
+Environment="URLS=http://localhost:5052"
 Environment="Db__ConnectionString=Data Source=/opt/battletrace/data.db"
 Environment="Serilog__WriteTo__Console__Args__outputTemplate=[{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}"
 Environment="Serilog__WriteTo__Seq__Name=Seq"
