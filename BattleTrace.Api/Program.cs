@@ -9,6 +9,7 @@ using Teraa.Extensions.AspNetCore;
 using Teraa.Extensions.Configuration;
 using BattleTrace.Api.Options;
 using BattleTrace.Data;
+using Teraa.Extensions.Serilog;
 
 Serilog.Debugging.SelfLog
     .Enable(x => Console.WriteLine($"<4>SERILOG: {x}"));
@@ -24,7 +25,9 @@ builder.Host
     .UseSystemd()
     .UseSerilog((hostContext, options) =>
     {
-        options.ReadFrom.Configuration(hostContext.Configuration);
+        options
+            .Enrich.With(new SyslogSeverityEnricher())
+            .ReadFrom.Configuration(hostContext.Configuration);
     });
 
 builder.Services

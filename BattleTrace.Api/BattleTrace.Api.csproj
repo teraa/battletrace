@@ -28,6 +28,7 @@
     <ProjectReference Include="..\BattleTrace.Data\BattleTrace.Data.csproj" />
     <ProjectReference Include="..\Extensions\AspNetCore\Extensions.AspNetCore.csproj" />
     <ProjectReference Include="..\Extensions\Configuration\Extensions.Configuration.csproj" />
+    <ProjectReference Include="..\Extensions\Serilog\Extensions.Serilog.csproj" />
   </ItemGroup>
 
 </Project>
