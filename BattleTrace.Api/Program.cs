@@ -9,8 +9,8 @@ using Teraa.Extensions.AspNetCore;
 using Teraa.Extensions.Configuration;
 using BattleTrace.Api.Options;
 using BattleTrace.Data;
-using Microsoft.Extensions.Hosting.Systemd;
-using Teraa.Extensions.Serilog;
+using Teraa.Extensions.Serilog.Systemd;
+using Teraa.Extensions.Serilog.Seq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,31 +25,8 @@ builder.Host
     {
         options
             .ReadFrom.Configuration(hostContext.Configuration)
-            .Enrich.FromLogContext();
-
-        var seqOptions = hostContext.Configuration.GetOptions(new[] {new SeqOptions.Validator()});
-        if (seqOptions is { })
-        {
-            options.WriteTo.Seq(seqOptions.ServerUrl.ToString(), apiKey: seqOptions.ApiKey);
-        }
-
-        if (SystemdHelpers.IsSystemdService())
-        {
-            Serilog.Debugging.SelfLog
-                .Enable(x => Console.WriteLine($"<4>SERILOG: {x}"));
-
-            options
-                .Enrich.With(new SyslogSeverityEnricher())
-                .WriteTo.Console(outputTemplate: "<{SyslogSeverity}>{SourceContext}: {Message:j}{NewLine}");
-        }
-        else
-        {
-            Serilog.Debugging.SelfLog
-                .Enable(x => Console.WriteLine($"SERILOG: {x}"));
-
-            options.WriteTo.Console(
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}");
-        }
+            .ConfigureSystemdConsole()
+            .ConfigureSeq(hostContext);
     });
 
 builder.Services
