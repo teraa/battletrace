@@ -10,6 +10,7 @@ WorkingDirectory=/opt/battletrace/bin/current
 ExecStart=/opt/battletrace/bin/current/BattleTrace.Api
 Restart=always
 Environment="ASPNETCORE_ENVIRONMENT=Development"
+Environment="ASPNETCORE_URLS=http://localhost:5052"
 #Environment="Serilog__WriteTo__Seq__Name=Seq"
 #Environment="Serilog__WriteTo__Seq__Args__serverUrl=x"
 #Environment="Serilog__WriteTo__Seq__Args__apiKey=x"
