@@ -33,6 +33,7 @@ public class PlayerFetcherService : BackgroundService
             {
                 await sender.Send(new Fetch.Command(), stoppingToken);
             }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching");
