@@ -21,7 +21,7 @@ public static class Index
         string ServerId,
         DateTimeOffset UpdatedAt,
         int Faction,
-        string Team,
+        int Team,
         int Rank,
         long Score,
         int Kills,

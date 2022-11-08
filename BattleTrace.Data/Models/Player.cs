@@ -12,7 +12,7 @@ namespace BattleTrace.Data.Models
         public DateTimeOffset UpdatedAt { get; set; }
         public string ServerId { get; set; }
         public int Faction { get; set; }
-        public string Team { get; set; }
+        public int Team { get; set; }
         public string Name { get; set; }
         public string Tag { get; set; }
         public int Rank { get; set; }

@@ -110,7 +110,7 @@ public static class Fetch
                                 UpdatedAt = now,
                                 ServerId = serverTask.ServerId,
                                 Faction = t.Value.Faction,
-                                Team = t.Key,
+                                Team = int.Parse(t.Key),
                                 Name = p.Value.Name,
                                 Tag = p.Value.Tag,
                                 Rank = p.Value.Rank,
