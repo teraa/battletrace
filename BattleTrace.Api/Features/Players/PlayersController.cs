@@ -16,6 +16,6 @@ public class PlayersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
-        => await _sender.Send(new Index.Query(), cancellationToken);
+    public async Task<IActionResult> Index([FromQuery] Index.Query query, CancellationToken cancellationToken)
+        => await _sender.Send(query, cancellationToken);
 }

@@ -1,4 +1,5 @@
 ﻿using BattleTrace.Data;
+using BattleTrace.Data.Models;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,9 @@ namespace BattleTrace.Api.Features.Players.Actions;
 
 public static class Index
 {
-    public record Query : IRequest<IActionResult>;
+    public record Query(
+        IReadOnlyList<string>? Id
+    ) : IRequest<IActionResult>;
 
     [UsedImplicitly]
     public record Result(
@@ -38,7 +41,12 @@ public static class Index
 
         public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            var results = await _ctx.Players
+            IQueryable<Player> query = _ctx.Players;
+
+            if (request.Id is {Count: > 0})
+                query = query.Where(x => request.Id.Contains(x.Id));
+
+            var results = await query
                 .Select(x => new Result(
                     x.Id,
                     x.Name,
