@@ -1,4 +1,3 @@
-using BattleTrace.Api.Features.Servers;
 using BattleTrace.Api.Initializers;
 using FluentValidation;
 using MediatR;
@@ -8,6 +7,8 @@ using Serilog;
 using Teraa.Extensions.AspNetCore;
 using Teraa.Extensions.Configuration;
 using BattleTrace.Api.Options;
+using BattleTrace.Api.Features.Players;
+using BattleTrace.Api.Features.Servers;
 using BattleTrace.Data;
 using Teraa.Extensions.Serilog.Systemd;
 using Teraa.Extensions.Serilog.Seq;
@@ -62,7 +63,8 @@ builder.Services
     .AddHttpContextAccessor()
     .AddOptionsWithValidation<DbOptions>()
     .AddOptionsWithValidation<ServerFetcherOptions>()
-    .AddHostedService<FetcherService>()
+    .AddHostedService<ServerFetcherService>()
+    .AddHostedService<PlayerFetcherService>()
     ;
 
 var app = builder.Build();

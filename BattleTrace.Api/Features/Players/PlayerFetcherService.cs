@@ -2,18 +2,18 @@
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace BattleTrace.Api.Features.Servers;
+namespace BattleTrace.Api.Features.Players;
 
-public class FetcherService : BackgroundService
+public class PlayerFetcherService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<FetcherService> _logger;
+    private readonly ILogger<PlayerFetcherService> _logger;
     private readonly TimeSpan _interval;
 
-    public FetcherService(
+    public PlayerFetcherService(
         IServiceScopeFactory scopeFactory,
-        IOptions<ServerFetcherOptions> options,
-        ILogger<FetcherService> logger)
+        IOptions<PlayerFetcherOptions> options,
+        ILogger<PlayerFetcherService> logger)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
@@ -23,12 +23,9 @@ public class FetcherService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var timer = new PeriodicTimer(_interval);
-        bool firstRun = true;
 
-        while (firstRun || await timer.WaitForNextTickAsync(stoppingToken))
+        while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            firstRun = false;
-
             await using var scope = _scopeFactory.CreateAsyncScope();
             var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
