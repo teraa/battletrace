@@ -85,4 +85,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.InitAsync();
-await app.RunAsync();
+// await app.RunAsync();
