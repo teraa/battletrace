@@ -20,6 +20,8 @@ public class PlayerFetcherService : BackgroundService
         _interval = options.Value.Interval;
     }
 
+    public DateTimeOffset SyncedAt { get; private set; } = DateTimeOffset.UtcNow;
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var timer = new PeriodicTimer(_interval);
@@ -31,6 +33,7 @@ public class PlayerFetcherService : BackgroundService
 
             try
             {
+                SyncedAt = DateTimeOffset.UtcNow;
                 await sender.Send(new Fetch.Command(), stoppingToken);
             }
             catch (OperationCanceledException) { }

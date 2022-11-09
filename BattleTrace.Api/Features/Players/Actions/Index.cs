@@ -10,7 +10,8 @@ namespace BattleTrace.Api.Features.Players.Actions;
 public static class Index
 {
     public record Query(
-        IReadOnlyList<string>? Id
+        IReadOnlyList<string>? Id,
+        bool ActiveOnly = false
     ) : IRequest<IActionResult>;
 
     [UsedImplicitly]
@@ -33,10 +34,12 @@ public static class Index
     public class Handler : IRequestHandler<Query, IActionResult>
     {
         private readonly AppDbContext _ctx;
+        private readonly PlayerFetcherService _service;
 
-        public Handler(AppDbContext ctx)
+        public Handler(AppDbContext ctx, PlayerFetcherService service)
         {
             _ctx = ctx;
+            _service = service;
         }
 
         public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
@@ -45,6 +48,9 @@ public static class Index
 
             if (request.Id is {Count: > 0})
                 query = query.Where(x => request.Id.Contains(x.Id));
+
+            if (request.ActiveOnly)
+                query = query.Where(x => x.UpdatedAt >= _service.SyncedAt);
 
             var results = await query
                 .Select(x => new Result(

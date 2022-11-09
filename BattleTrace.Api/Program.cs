@@ -64,7 +64,8 @@ builder.Services
     .AddOptionsWithValidation<DbOptions>()
     .AddOptionsWithValidation<ServerFetcherOptions>()
     .AddHostedService<ServerFetcherService>()
-    .AddHostedService<PlayerFetcherService>()
+    .AddSingleton<PlayerFetcherService>()
+    .AddSingleton<IHostedService>(x => x.GetRequiredService<PlayerFetcherService>())
     ;
 
 var app = builder.Build();
