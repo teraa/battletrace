@@ -29,7 +29,7 @@ public static class Index
         public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
         {
             var results = await _ctx.Servers
-                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt2))
+                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt))
                 .ToListAsync(cancellationToken);
 
             return new OkObjectResult(results);
