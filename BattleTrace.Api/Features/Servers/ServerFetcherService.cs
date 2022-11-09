@@ -23,12 +23,9 @@ public class ServerFetcherService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var timer = new PeriodicTimer(_interval);
-        bool firstRun = true;
 
-        while (firstRun || await timer.WaitForNextTickAsync(stoppingToken))
+        do
         {
-            firstRun = false;
-
             await using var scope = _scopeFactory.CreateAsyncScope();
             var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
@@ -41,6 +38,6 @@ public class ServerFetcherService : BackgroundService
             {
                 _logger.LogError(ex, "Error fetching");
             }
-        }
+        } while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 }
