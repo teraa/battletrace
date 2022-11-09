@@ -52,7 +52,7 @@ public static class Index
                     x.Name,
                     x.Tag,
                     x.ServerId,
-                    x.UpdatedAt,
+                    x.UpdatedAt2,
                     x.Faction,
                     x.Team,
                     x.Rank,

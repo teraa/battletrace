@@ -10,8 +10,7 @@ namespace BattleTrace.Data.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
-        public long UpdatedAt2 { get; set; }
+        public DateTimeOffset UpdatedAt2 { get; set; }
     }
 }
 

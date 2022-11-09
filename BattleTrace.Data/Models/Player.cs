@@ -9,8 +9,7 @@ namespace BattleTrace.Data.Models
     public class Player
     {
         public string Id { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
-        public long UpdatedAt2 { get; set; }
+        public DateTimeOffset UpdatedAt2 { get; set; }
         public string ServerId { get; set; }
         public int Faction { get; set; }
         public int Team { get; set; }

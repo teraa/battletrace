@@ -45,7 +45,7 @@ public static class Fetch
                 .ToListAsync(cancellationToken);
 
             var serverIds = servers
-                .Where(x => x.UpdatedAt > minTimestamp)
+                .Where(x => x.UpdatedAt2 > minTimestamp)
                 .Select(x => x.Id)
                 .ToList();
 
@@ -95,7 +95,7 @@ public static class Fetch
                         .Where(x => x.Id == serverTask.ServerId)
                         .FirstAsync(cancellationToken);
 
-                    server.UpdatedAt = now;
+                    server.UpdatedAt2 = now;
 
                     var response =
                         await httpResponse.Content.ReadFromJsonAsync<Response>(cancellationToken: cancellationToken);
@@ -107,7 +107,7 @@ public static class Fetch
                             .Select(p => new Data.Models.Player
                             {
                                 Id = p.Key,
-                                UpdatedAt = now,
+                                UpdatedAt2 = now,
                                 ServerId = serverTask.ServerId,
                                 Faction = t.Value.Faction,
                                 Team = int.Parse(t.Key),
