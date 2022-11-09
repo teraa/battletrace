@@ -21,6 +21,8 @@ namespace BattleTrace.Data.Models
         public int Deaths { get; set; }
         public int Squad { get; set; }
         public int Role { get; set; }
+
+        public Server Server { get; set; }
     }
 }
 
