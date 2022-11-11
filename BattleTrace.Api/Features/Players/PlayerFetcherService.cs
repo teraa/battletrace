@@ -33,8 +33,9 @@ public class PlayerFetcherService : BackgroundService
 
             try
             {
-                SyncedAt = DateTimeOffset.UtcNow;
+                var now = DateTimeOffset.UtcNow;
                 await sender.Send(new Fetch.Command(), stoppingToken);
+                SyncedAt = now;
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
