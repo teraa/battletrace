@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using BattleTrace.Api.Options;
 using BattleTrace.Data;
+using BattleTrace.Data.Models;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +69,12 @@ public static class Fetch
             } while (requestIndex < lastSuccessfulIndex + _options.Threshold);
 
             var now = DateTimeOffset.UtcNow;
+
+            _ctx.ServerScans.Add(new ServerScan
+            {
+                Timestamp = now,
+                ServerCount = servers.Count,
+            });
 
             var serversToUpdate = await _ctx.Servers
                 .Where(x => servers.Keys.Contains(x.Id))

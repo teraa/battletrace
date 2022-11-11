@@ -1,5 +1,7 @@
 ﻿using BattleTrace.Api.Options;
+using BattleTrace.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace BattleTrace.Api.Features.Servers;
@@ -22,6 +24,20 @@ public class ServerFetcherService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await using (var scope = _scopeFactory.CreateAsyncScope())
+        {
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var lastScan = await ctx.ServerScans
+                .OrderByDescending(x => x.Timestamp)
+                .Select(x => x.Timestamp)
+                .FirstOrDefaultAsync(stoppingToken);
+
+            var initialDelay = lastScan + _interval - DateTimeOffset.UtcNow;
+            if (initialDelay > TimeSpan.Zero)
+                await Task.Delay(initialDelay, stoppingToken);
+        }
+
         var timer = new PeriodicTimer(_interval);
 
         do
