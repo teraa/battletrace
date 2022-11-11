@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using BattleTrace.Api.Options;
 using BattleTrace.Data;
+using BattleTrace.Data.Models;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,8 @@ public static class Fetch
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
 
-            var minTimestamp = DateTimeOffset.UtcNow - _options.MaxServerAge;
+            var scanAt = DateTimeOffset.UtcNow;
+            var minTimestamp = scanAt - _options.MaxServerAge;
 
             var servers = await _ctx.Servers
                 .ToListAsync(cancellationToken);
@@ -129,6 +131,12 @@ public static class Fetch
             sw.Stop();
             _logger.LogDebug("Fetched {Players} players from {Servers} servers in {Duration}",
                 players.Count, servers.Count, sw.Elapsed);
+
+            _ctx.PlayerScans.Add(new PlayerScan
+            {
+                Timestamp = scanAt,
+                PlayerCount = players.Count,
+            });
 
             var playersToUpdate = await _ctx.Players
                 .Where(x => players.Keys.Contains(x.Id))

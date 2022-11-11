@@ -35,12 +35,10 @@ public static class Index
     public class Handler : IRequestHandler<Query, IActionResult>
     {
         private readonly AppDbContext _ctx;
-        private readonly PlayerFetcherService _service;
 
-        public Handler(AppDbContext ctx, PlayerFetcherService service)
+        public Handler(AppDbContext ctx)
         {
             _ctx = ctx;
-            _service = service;
         }
 
         public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
@@ -51,7 +49,17 @@ public static class Index
                 query = query.Where(x => request.Id.Contains(x.Id));
 
             if (request.ActiveOnly)
-                query = query.Where(x => x.UpdatedAt >= _service.SyncedAt);
+            {
+                var lastScan = await _ctx.PlayerScans
+                    .Select(x => x.Timestamp)
+                    .OrderByDescending(x => x)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (lastScan == default)
+                    return new OkObjectResult(Array.Empty<Result>());
+
+                query = query.Where(x => x.UpdatedAt >= lastScan);
+            }
 
             var results = await query
                 .Select(x => new Result(
