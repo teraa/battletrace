@@ -10,7 +10,7 @@ public class PlayerFetcherOptions
     public TimeSpan Interval { get; init; } = TimeSpan.FromMinutes(5);
     public TimeSpan BatchDelay { get; init; } = TimeSpan.FromSeconds(2);
     public int BatchSize { get; init; } = 60;
-    public TimeSpan MaxServerAge { get; set; } = TimeSpan.FromDays(5);
+    public TimeSpan MaxServerAge { get; set; } = TimeSpan.FromDays(2);
 
     [UsedImplicitly]
     public class Validator : AbstractValidator<PlayerFetcherOptions>
