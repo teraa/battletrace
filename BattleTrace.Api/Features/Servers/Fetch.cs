@@ -86,7 +86,7 @@ public static class Fetch
             {
                 Id = x.Guid,
                 Name = x.Name,
-                UpdatedAt = now
+                UpdatedAt = now,
             }));
 
             await _ctx.SaveChangesAsync(cancellationToken);
