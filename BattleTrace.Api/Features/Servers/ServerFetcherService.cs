@@ -35,7 +35,12 @@ public class ServerFetcherService : BackgroundService
 
             var initialDelay = lastScan + _interval - DateTimeOffset.UtcNow;
             if (initialDelay > TimeSpan.Zero)
+            {
+                _logger.LogInformation("Last scan was at {LastScan}, delaying next scan by {Delay}",
+                    lastScan, initialDelay);
+
                 await Task.Delay(initialDelay, stoppingToken);
+            }
         }
 
         var timer = new PeriodicTimer(_interval);
