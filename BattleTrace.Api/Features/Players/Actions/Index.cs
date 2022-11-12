@@ -1,5 +1,6 @@
 ﻿using BattleTrace.Data;
 using BattleTrace.Data.Models;
+using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,20 @@ namespace BattleTrace.Api.Features.Players.Actions;
 public static class Index
 {
     public record Query(
-        [ModelBinder(Name = "id")]
-        IReadOnlyList<string>? Ids,
-        [ModelBinder(Name = "active")]
-        bool ActiveOnly = false
+        [ModelBinder(Name = "id")] IReadOnlyList<string>? Ids,
+        string? NamePattern,
+        [ModelBinder(Name = "active")] bool ActiveOnly = false,
+        int? Limit = null
     ) : IRequest<IActionResult>;
+
+    [UsedImplicitly]
+    public class QueryValidator : AbstractValidator<Query>
+    {
+        public QueryValidator()
+        {
+            RuleFor(x => x.Limit).GreaterThan(0);
+        }
+    }
 
     [UsedImplicitly]
     public record Result(
@@ -50,6 +60,12 @@ public static class Index
             if (request.Ids is {Count: > 0})
                 query = query.Where(x => request.Ids.Contains(x.Id));
 
+            if (request.NamePattern is {Length: > 0})
+            {
+                query = query.Where(x =>
+                    EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLower()));
+            }
+
             if (request.ActiveOnly)
             {
                 var lastScan = await _ctx.PlayerScans
@@ -62,6 +78,9 @@ public static class Index
 
                 query = query.Where(x => x.UpdatedAt >= lastScan);
             }
+
+            if (request.Limit is { })
+                query = query.Take(request.Limit.Value);
 
             var results = await query
                 .Select(x => new Result(
