@@ -13,6 +13,7 @@ public static class Index
     public record Query(
         [ModelBinder(Name = "id")] IReadOnlyList<string>? Ids,
         string? NamePattern,
+        string? TagPattern,
         [ModelBinder(Name = "active")] bool ActiveOnly = false,
         int? Limit = null
     ) : IRequest<IActionResult>;
@@ -64,6 +65,12 @@ public static class Index
             {
                 query = query.Where(x =>
                     EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
+            }
+
+            if (request.TagPattern is {Length: > 0})
+            {
+                query = query.Where(x =>
+                    EF.Functions.Glob(x.Tag.ToLower(), request.TagPattern.ToLowerInvariant()));
             }
 
             if (request.ActiveOnly)
