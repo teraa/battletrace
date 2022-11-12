@@ -35,6 +35,7 @@ public static class Fetch
 
         protected override async Task Handle(Command request, CancellationToken cancellationToken)
         {
+            var sw = Stopwatch.StartNew();
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
 
@@ -67,6 +68,10 @@ public static class Fetch
 
                 requestIndex++;
             } while (requestIndex < lastSuccessfulIndex + _options.Threshold);
+
+            sw.Stop();
+            _logger.LogInformation("Found {Servers} servers in {Requests} requests within {Duration}",
+                servers.Count, requestIndex, sw.Elapsed);
 
             var now = DateTimeOffset.UtcNow;
 

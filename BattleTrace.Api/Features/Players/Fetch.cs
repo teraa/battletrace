@@ -129,7 +129,7 @@ public static class Fetch
             }
 
             sw.Stop();
-            _logger.LogDebug("Fetched {Players} players from {Servers} servers in {Duration}",
+            _logger.LogInformation("Fetched {Players} players from {Servers} servers in {Duration}",
                 players.Count, servers.Count, sw.Elapsed);
 
             _ctx.PlayerScans.Add(new PlayerScan
