@@ -63,7 +63,7 @@ public static class Index
             if (request.NamePattern is {Length: > 0})
             {
                 query = query.Where(x =>
-                    EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLower()));
+                    EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
             }
 
             if (request.ActiveOnly)
