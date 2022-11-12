@@ -139,7 +139,7 @@ public static class Fetch
             });
 
             var playersToUpdate = await _ctx.Players
-                .Where(x => players.Keys.Contains(x.Id))
+                .Where(x => players.ContainsKey(x.Id))
                 .ToListAsync(cancellationToken);
 
             _ctx.Players.RemoveRange(playersToUpdate);

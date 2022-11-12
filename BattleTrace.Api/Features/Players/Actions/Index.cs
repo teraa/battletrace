@@ -10,7 +10,8 @@ namespace BattleTrace.Api.Features.Players.Actions;
 public static class Index
 {
     public record Query(
-        IReadOnlyList<string>? Id,
+        [ModelBinder(Name = "id")]
+        IReadOnlyList<string>? Ids,
         bool ActiveOnly = false
     ) : IRequest<IActionResult>;
 
@@ -45,8 +46,8 @@ public static class Index
         {
             IQueryable<Player> query = _ctx.Players;
 
-            if (request.Id is {Count: > 0})
-                query = query.Where(x => request.Id.Contains(x.Id));
+            if (request.Ids is {Count: > 0})
+                query = query.Where(x => request.Ids.Contains(x.Id));
 
             if (request.ActiveOnly)
             {
