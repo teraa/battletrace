@@ -12,6 +12,7 @@ public static class Index
     public record Query(
         [ModelBinder(Name = "id")]
         IReadOnlyList<string>? Ids,
+        [ModelBinder(Name = "active")]
         bool ActiveOnly = false
     ) : IRequest<IActionResult>;
 
