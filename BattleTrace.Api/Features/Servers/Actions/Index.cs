@@ -50,15 +50,12 @@ public static class Index
                     EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
             }
 
-            if (request.Limit is { })
-                query = query.Take(request.Limit.Value);
-
             var lastPlayerScan = await _ctx.PlayerScans
                 .Select(x => x.Timestamp)
                 .OrderByDescending(x => x)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var results = await query
+            var finalQuery = query
                 .Select(x => new
                 {
                     x.Id,
@@ -67,6 +64,12 @@ public static class Index
                     Players = x.Players.Count(p => p.UpdatedAt >= lastPlayerScan),
                 })
                 .OrderByDescending(x => x.Players)
+                .AsQueryable();
+
+            if (request.Limit is { })
+                finalQuery = finalQuery.Take(request.Limit.Value);
+
+            var results = await finalQuery
                 .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players))
                 .ToListAsync(cancellationToken);
 
