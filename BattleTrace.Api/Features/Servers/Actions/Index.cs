@@ -1,5 +1,4 @@
 ﻿using BattleTrace.Data;
-using BattleTrace.Data.Models;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
@@ -60,7 +59,15 @@ public static class Index
                 .FirstOrDefaultAsync(cancellationToken);
 
             var results = await query
-                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players.Count(p => p.UpdatedAt >= lastPlayerScan)))
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.UpdatedAt,
+                    Players = x.Players.Count(p => p.UpdatedAt >= lastPlayerScan),
+                })
+                .OrderByDescending(x => x.Players)
+                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players))
                 .ToListAsync(cancellationToken);
 
             return new OkObjectResult(results);
