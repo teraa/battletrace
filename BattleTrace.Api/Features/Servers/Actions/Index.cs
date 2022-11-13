@@ -54,8 +54,13 @@ public static class Index
             if (request.Limit is { })
                 query = query.Take(request.Limit.Value);
 
+            var lastPlayerScan = await _ctx.PlayerScans
+                .Select(x => x.Timestamp)
+                .OrderByDescending(x => x)
+                .FirstOrDefaultAsync(cancellationToken);
+
             var results = await query
-                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players.Count))
+                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players.Count(p => p.UpdatedAt >= lastPlayerScan)))
                 .ToListAsync(cancellationToken);
 
             return new OkObjectResult(results);
