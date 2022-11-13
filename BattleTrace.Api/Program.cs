@@ -47,7 +47,6 @@ builder.Services
 
         options.UseSqlite(dbOptions.ConnectionString, contextOptions =>
         {
-            contextOptions.MigrationsAssembly(typeof(Program).Assembly.FullName);
             contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         });
 
