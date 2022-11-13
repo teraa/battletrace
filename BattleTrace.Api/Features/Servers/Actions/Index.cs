@@ -1,5 +1,6 @@
 ﻿using BattleTrace.Data;
 using BattleTrace.Data.Models;
+using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,18 @@ namespace BattleTrace.Api.Features.Servers.Actions;
 public static class Index
 {
     public record Query(
-        string? NamePattern) : IRequest<IActionResult>;
+        string? NamePattern,
+        int? Limit = null
+    ) : IRequest<IActionResult>;
+
+    [UsedImplicitly]
+    public class QueryValidator : AbstractValidator<Query>
+    {
+        public QueryValidator()
+        {
+            RuleFor(x => x.Limit).GreaterThan(0);
+        }
+    }
 
     [UsedImplicitly]
     public record Result(
@@ -37,6 +49,9 @@ public static class Index
                 query = query.Where(x =>
                     EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
             }
+
+            if (request.Limit is { })
+                query = query.Take(request.Limit.Value);
 
             var results = await query
                 .Select(x => new Result(x.Id, x.Name, x.UpdatedAt))
