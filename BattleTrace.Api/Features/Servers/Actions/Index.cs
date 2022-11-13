@@ -28,7 +28,8 @@ public static class Index
     public record Result(
         string Id,
         string Name,
-        DateTimeOffset UpdatedAt);
+        DateTimeOffset UpdatedAt,
+        int Players);
 
     [UsedImplicitly]
     public class Handler : IRequestHandler<Query, IActionResult>
@@ -54,7 +55,7 @@ public static class Index
                 query = query.Take(request.Limit.Value);
 
             var results = await query
-                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt))
+                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players.Count))
                 .ToListAsync(cancellationToken);
 
             return new OkObjectResult(results);
