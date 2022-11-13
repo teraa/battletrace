@@ -86,6 +86,8 @@ public static class Index
                 query = query.Where(x => x.UpdatedAt >= lastScan);
             }
 
+            query = query.OrderBy(x => x.Name);
+
             if (request.Limit is { })
                 query = query.Take(request.Limit.Value);
 
