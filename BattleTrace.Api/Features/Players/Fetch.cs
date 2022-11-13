@@ -79,7 +79,7 @@ public static class Fetch
                     })
                     .ToList();
 
-                var responses = await Task.WhenAll(serverTasks.Select(x => x.Task));
+                await Task.WhenAll(serverTasks.Select(x => x.Task));
                 var now = DateTimeOffset.UtcNow;
 
                 foreach (var serverTask in serverTasks)

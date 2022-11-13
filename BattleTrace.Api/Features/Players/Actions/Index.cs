@@ -1,5 +1,4 @@
 ﻿using BattleTrace.Data;
-using BattleTrace.Data.Models;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
