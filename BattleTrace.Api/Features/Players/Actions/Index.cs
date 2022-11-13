@@ -56,7 +56,7 @@ public static class Index
 
         public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            IQueryable<Player> query = _ctx.Players;
+            var query = _ctx.Players.AsQueryable();
 
             if (request.Ids is {Count: > 0})
                 query = query.Where(x => request.Ids.Contains(x.Id));
