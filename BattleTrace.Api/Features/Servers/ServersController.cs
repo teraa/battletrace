@@ -16,6 +16,6 @@ public class ServersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(Index.Query query, CancellationToken cancellationToken)
+    public async Task<IActionResult> Index([FromQuery] Index.Query query, CancellationToken cancellationToken)
         => await _sender.Send(query, cancellationToken);
 }
