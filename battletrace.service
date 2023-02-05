@@ -3,7 +3,7 @@ Description=BattleTrace.Api
 After=network-online.target
 
 [Service]
-User=tera
+User=battletrace
 Type=notify
 SyslogIdentifier=trace
 WorkingDirectory=/opt/battletrace/bin/current
