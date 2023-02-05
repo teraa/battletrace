@@ -42,27 +42,29 @@ jobs:
           -p:DebugType=None
 
       - name: SSH Config
+        env:
+          host: ${{ secrets.HOST }}
+          port: 110
         run: |
           mkdir -p ~/.ssh
-          echo "$key" > ~/.ssh/id
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id
           chmod 600 ~/.ssh/id
           cat >> ~/.ssh/config << EOF
-          Host deploy
+          Host target
               HostName $host
+              Port $port
               User $user
               IdentityFile ~/.ssh/id
           EOF
-          ssh-keyscan -H $host >> ~/.ssh/known_hosts
+          ssh-keyscan -H -p $port $host >> ~/.ssh/known_hosts
 
       - name: Upload
-        run: rsync -avzh --chown=$user:$user bin/publish deploy:/opt/battletrace/bin
+        run: rsync -avzh --chown=$user:$user bin/publish target:/opt/battletrace/bin
 
       - name: Deploy
-        run: ssh deploy 'cd /opt/battletrace/ && bash -s' < deploy.sh
+        run: ssh target 'cd /opt/battletrace/ && bash -s' < deploy.sh
 
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  host: do.teraa.dev
-  user: tera
-  key: ${{ secrets.SSH_KEY }}
+  user: battletrace
