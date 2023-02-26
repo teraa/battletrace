@@ -1,6 +1,5 @@
 using BattleTrace.Api.Initializers;
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -58,7 +57,10 @@ builder.Services
         options.EnableSensitiveDataLogging();
 #endif
     })
-    .AddMediatR(typeof(Program))
+    .AddMediatR(config =>
+    {
+        config.RegisterServicesFromAssemblyContaining<Program>();
+    })
     .AddRequestValidationBehaviour()
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMemoryCache()
