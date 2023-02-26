@@ -14,7 +14,7 @@ public static class Fetch
     public record Command : IRequest;
 
     [UsedImplicitly]
-    public class Handler : AsyncRequestHandler<Command>
+    public class Handler : IRequestHandler<Command>
     {
         private readonly ServerFetcherOptions _options;
         private readonly AppDbContext _ctx;
@@ -33,7 +33,7 @@ public static class Fetch
             _options = options.CurrentValue;
         }
 
-        protected override async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
             _client.DefaultRequestHeaders.Clear();
