@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BattleTrace.Data\BattleTrace.Data.csproj" />
     <ProjectReference Include="..\Extensions\AspNetCore\Extensions.AspNetCore.csproj" />
+    <ProjectReference Include="..\Extensions\Configuration.Vault.Options\Extensions.Configuration.Vault.Options.csproj" />
     <ProjectReference Include="..\Extensions\Configuration\Extensions.Configuration.csproj" />
     <ProjectReference Include="..\Extensions\Serilog.Seq\Extensions.Serilog.Seq.csproj" />
     <ProjectReference Include="..\Extensions\Serilog.Systemd\Extensions.Serilog.Systemd.csproj" />

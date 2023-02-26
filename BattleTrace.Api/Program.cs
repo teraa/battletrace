@@ -10,10 +10,13 @@ using BattleTrace.Api.Options;
 using BattleTrace.Api.Features.Players;
 using BattleTrace.Api.Features.Servers;
 using BattleTrace.Data;
+using Teraa.Extensions.Configuration.Vault.Options;
 using Teraa.Extensions.Serilog.Systemd;
 using Teraa.Extensions.Serilog.Seq;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddVault();
 
 builder.Host
     .UseDefaultServiceProvider(options =>
