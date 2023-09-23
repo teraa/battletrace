@@ -42,29 +42,21 @@ jobs:
           -p:DebugType=None
 
       - name: SSH Config
+        working-directory: .github/workflows
+        run: bash ssh-config.sh
         env:
-          host: ${{ secrets.HOST }}
-          port: 110
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id
-          chmod 600 ~/.ssh/id
-          cat >> ~/.ssh/config << EOF
-          Host target
-              HostName $host
-              Port $port
-              User $user
-              IdentityFile ~/.ssh/id
-          EOF
-          ssh-keyscan -H -p $port $host >> ~/.ssh/known_hosts
+          host: ${{ secrets.host }}
+          port: ${{ vars.port }}
+          key: ${{ secrets.SSH_KEY }}
 
       - name: Upload
         run: rsync -avzh --chown=$user:$user bin/publish target:/opt/battletrace/bin
 
       - name: Deploy
+        working-directory: .github/workflows
         run: ssh target 'cd /opt/battletrace/ && bash -s' < deploy.sh
 
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  user: battletrace
+  user: ${{ vars.user }}
