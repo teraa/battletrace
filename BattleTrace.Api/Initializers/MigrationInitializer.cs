@@ -15,8 +15,8 @@ public class MigrationInitializer : IAsyncInitializer
         _ctx = ctx;
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(CancellationToken cancellationToken)
     {
-        await _ctx.Database.MigrateAsync();
+        await _ctx.Database.MigrateAsync(cancellationToken);
     }
 }
