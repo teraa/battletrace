@@ -1,5 +1,5 @@
 [Unit]
-Description=BattleTrace.Api
+Description=BattleTrace
 After=network-online.target
 
 [Service]
@@ -7,7 +7,7 @@ User=battletrace
 Type=notify
 SyslogIdentifier=trace
 WorkingDirectory=/opt/battletrace/bin/current
-ExecStart=/opt/battletrace/bin/current/BattleTrace.Api
+ExecStart=/opt/battletrace/bin/current/BattleTrace
 Restart=always
 Environment="ASPNETCORE_ENVIRONMENT=Production"
 Environment="URLS=http://localhost:5052"

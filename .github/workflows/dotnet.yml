@@ -35,7 +35,7 @@ jobs:
 
       - name: Build
         run: >
-          dotnet publish BattleTrace.Api
+          dotnet publish BattleTrace
           --no-restore -c Release -r linux-x64 --self-contained false -o bin/publish/
           -p:GenerateDocumentationFile=false
           -p:PublishSingleFile=true
