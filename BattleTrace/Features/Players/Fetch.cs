@@ -142,6 +142,7 @@ public static class Fetch
                 .Where(x => players.Keys.Contains(x.Id))
                 .ToListAsync(cancellationToken);
 
+            // Just delete and re-add all entries instead of bothering with change-tracking
             _ctx.Players.RemoveRange(playersToUpdate);
             _ctx.Players.AddRange(players.Values);
             await _ctx.SaveChangesAsync(cancellationToken);
