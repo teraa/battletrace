@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using BattleTrace.Data.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 #pragma warning disable CS8618
 namespace BattleTrace.Data.Models
@@ -23,6 +24,16 @@ namespace BattleTrace.Data.Models
         public int Role { get; set; }
 
         public Server Server { get; set; }
+    }
+
+    public class PlayerConfiguration : IEntityTypeConfiguration<Player>
+    {
+        public void Configure(EntityTypeBuilder<Player> builder)
+        {
+            builder.HasIndex(x => x.Name);
+            builder.HasIndex(x => x.Tag);
+            builder.HasIndex(x => x.UpdatedAt);
+        }
     }
 }
 
