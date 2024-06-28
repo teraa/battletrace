@@ -102,7 +102,8 @@ public static class Fetch
         private record Response(
             IReadOnlyList<Server> Data);
 
-        public record Server(
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private record Server(
             string Guid,
             string Name,
             string Map,
