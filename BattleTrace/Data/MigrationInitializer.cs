@@ -1,9 +1,8 @@
 ﻿using Extensions.Hosting.AsyncInitialization;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using BattleTrace.Data;
 
-namespace BattleTrace.Initializers;
+namespace BattleTrace.Data;
 
 [UsedImplicitly]
 public class MigrationInitializer : IAsyncInitializer

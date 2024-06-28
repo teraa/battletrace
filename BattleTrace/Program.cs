@@ -1,4 +1,3 @@
-using BattleTrace.Initializers;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
