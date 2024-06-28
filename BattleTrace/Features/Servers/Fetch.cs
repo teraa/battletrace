@@ -91,6 +91,8 @@ public static class Fetch
             {
                 Id = x.Guid,
                 Name = x.Name,
+                IpAddress = x.Ip,
+                Port = x.Port,
                 UpdatedAt = now,
             }));
 
