@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+
 // ReSharper disable ClassNeverInstantiated.Local
 
 namespace BattleTrace.Features.Players;
@@ -52,7 +53,8 @@ public static class Fetch
 
             int batchCount = (int) Math.Ceiling((double) serverIds.Count / _options.BatchSize);
 
-            _logger.LogDebug("Fetching players for {Servers} servers in {Batches} batches with minimum expected duration of {Duration}",
+            _logger.LogDebug(
+                "Fetching players for {Servers} servers in {Batches} batches with minimum expected duration of {Duration}",
                 serverIds.Count, batchCount, batchCount * _options.BatchDelay);
 
             var players = new Dictionary<string, Data.Models.Player>();
@@ -87,8 +89,9 @@ public static class Fetch
 
                     if (!httpResponse.IsSuccessStatusCode)
                     {
-                        _logger.LogDebug("Failed fetching players for {ServerId}, server returned: {StatusCode}: {ReasonPhrase}",
-                            serverTask.ServerId, (int)httpResponse.StatusCode, httpResponse.ReasonPhrase);
+                        _logger.LogDebug(
+                            "Failed fetching players for {ServerId}, server returned: {StatusCode}: {ReasonPhrase}",
+                            serverTask.ServerId, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
                         continue;
                     }
 

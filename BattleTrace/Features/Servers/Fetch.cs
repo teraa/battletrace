@@ -63,7 +63,8 @@ public static class Fetch
                 if (serversCount != servers.Count)
                     lastSuccessfulIndex = requestIndex;
 
-                _logger.LogDebug("Request {Request}: Found {NewServers} new servers, {TotalServers} total", requestIndex, servers.Count - serversCount, servers.Count);
+                _logger.LogDebug("Request {Request}: Found {NewServers} new servers, {TotalServers} total",
+                    requestIndex, servers.Count - serversCount, servers.Count);
 
                 requestIndex++;
             } while (requestIndex < lastSuccessfulIndex + _options.Threshold);
@@ -99,8 +100,7 @@ public static class Fetch
         }
 
 
-        private record Response(
-            IReadOnlyList<Server> Data);
+        private record Response(IReadOnlyList<Server> Data);
 
         // ReSharper disable once ClassNeverInstantiated.Local
         private record Server(
