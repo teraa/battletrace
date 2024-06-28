@@ -11,6 +11,7 @@ public static class Index
 {
     public record Query(
         string? NamePattern,
+        Guid? Id,
         int? Limit = null
     ) : IRequest<IActionResult>;
 
@@ -43,6 +44,11 @@ public static class Index
         public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = _ctx.Servers.AsQueryable();
+
+            if (request.Id is not null)
+            {
+                query = query.Where(x => x.Id == request.Id.ToString());
+            }
 
             if (request.NamePattern is {Length: > 0})
             {
