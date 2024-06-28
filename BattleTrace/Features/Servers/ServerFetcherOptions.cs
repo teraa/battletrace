@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
 using JetBrains.Annotations;
+using Teraa.Extensions.Configuration;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace BattleTrace.Options;
+namespace BattleTrace.Features.Servers;
 
 #pragma warning disable CS8618
 public class ServerFetcherOptions
@@ -22,5 +24,17 @@ public class ServerFetcherOptions
             RuleFor(x => x.Offset).GreaterThan(0);
             RuleFor(x => x.Threshold).GreaterThanOrEqualTo(0);
         }
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddServerFetcher(this IServiceCollection services)
+    {
+        services
+            .AddValidatedOptions<ServerFetcherOptions>()
+            .AddHostedService<ServerFetcherService>();
+
+        return services;
     }
 }

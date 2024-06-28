@@ -1,5 +1,4 @@
-﻿using BattleTrace.Options;
-using BattleTrace.Data;
+﻿using BattleTrace.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

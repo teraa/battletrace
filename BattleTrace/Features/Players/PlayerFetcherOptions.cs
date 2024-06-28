@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
 using JetBrains.Annotations;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace BattleTrace.Options;
+namespace BattleTrace.Features.Players;
 
 #pragma warning disable CS8618
 public class PlayerFetcherOptions
@@ -22,5 +23,17 @@ public class PlayerFetcherOptions
             RuleFor(x => x.BatchSize).GreaterThan(0);
             RuleFor(x => x.MaxServerAge).GreaterThan(TimeSpan.Zero);
         }
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddPlayerFetcher(this IServiceCollection services)
+    {
+        services
+            .AddSingleton<PlayerFetcherService>()
+            .AddSingleton<IHostedService>(x => x.GetRequiredService<PlayerFetcherService>());
+
+        return services;
     }
 }

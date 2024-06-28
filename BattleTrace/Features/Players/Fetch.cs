@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using BattleTrace.Options;
 using BattleTrace.Data;
 using BattleTrace.Data.Models;
 using JetBrains.Annotations;

@@ -1,10 +1,6 @@
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Serilog;
 using Teraa.Extensions.AspNetCore;
-using Teraa.Extensions.Configuration;
-using BattleTrace.Options;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
@@ -32,29 +28,12 @@ builder.Host
     });
 
 builder.Services
-    .AddAsyncInitialization()
-    .AddAsyncInitializer<MigrationInitializer>()
     .AddControllers(options =>
     {
         options.ModelValidatorProviders.Clear();
     })
     .Services
-    .AddDbContext<AppDbContext>((services, options) =>
-    {
-        using var scope = services.CreateScope();
-        var dbOptions = scope.ServiceProvider
-            .GetRequiredService<IOptionsMonitor<DbOptions>>()
-            .CurrentValue;
-
-        options.UseSqlite(dbOptions.ConnectionString, contextOptions =>
-        {
-            contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-        });
-
-#if DEBUG
-        options.EnableSensitiveDataLogging();
-#endif
-    })
+    .AddDb()
     .AddMediatR(config =>
     {
         config.RegisterServicesFromAssemblyContaining<Program>();
@@ -64,11 +43,8 @@ builder.Services
     .AddMemoryCache()
     .AddHttpClient()
     .AddHttpContextAccessor()
-    .AddValidatedOptions<DbOptions>()
-    .AddValidatedOptions<ServerFetcherOptions>()
-    .AddHostedService<ServerFetcherService>()
-    .AddSingleton<PlayerFetcherService>()
-    .AddSingleton<IHostedService>(x => x.GetRequiredService<PlayerFetcherService>())
+    .AddPlayerFetcher()
+    .AddServerFetcher()
     ;
 
 var app = builder.Build();
