@@ -12,7 +12,7 @@ internal sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<A
     public AppDbContext CreateDbContext(string[] args)
     {
         var config = new ConfigurationBuilder()
-            .AddUserSecrets<Program>(optional: false)
+            .AddUserSecrets<Program>(optional: true)
             .Build();
 
         var dbOptions = config.GetValidatedOptionsOrDefault<DbOptions>();
