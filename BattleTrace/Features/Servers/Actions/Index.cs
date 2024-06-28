@@ -28,6 +28,8 @@ public static class Index
     public record Result(
         string Id,
         string Name,
+        string IpAddress,
+        int Port,
         DateTimeOffset UpdatedAt,
         int Players);
 
@@ -66,6 +68,8 @@ public static class Index
                 {
                     x.Id,
                     x.Name,
+                    x.IpAddress,
+                    x.Port,
                     x.UpdatedAt,
                     Players = x.Players.Count(p => p.UpdatedAt >= lastPlayerScan),
                 })
@@ -76,7 +80,7 @@ public static class Index
                 finalQuery = finalQuery.Take(request.Limit.Value);
 
             var results = await finalQuery
-                .Select(x => new Result(x.Id, x.Name, x.UpdatedAt, x.Players))
+                .Select(x => new Result(x.Id, x.Name, x.IpAddress, x.Port, x.UpdatedAt, x.Players))
                 .ToListAsync(cancellationToken);
 
             return new OkObjectResult(results);
