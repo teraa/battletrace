@@ -2,11 +2,11 @@
 
 namespace BattleTrace;
 
-public abstract class RateLimitingHandler : DelegatingHandler
+public sealed class RateLimitingHandler : DelegatingHandler
 {
     private readonly RateLimiter _limiter;
 
-    protected RateLimitingHandler(RateLimiter limiter)
+    public RateLimitingHandler(RateLimiter limiter)
     {
         _limiter = limiter;
     }

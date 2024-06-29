@@ -1,7 +1,4 @@
-﻿using System.Threading.RateLimiting;
-using Microsoft.Extensions.Options;
-
-namespace BattleTrace.Features.Players;
+﻿namespace BattleTrace.Features.Players;
 
 public sealed class Client
 {
@@ -17,18 +14,5 @@ public sealed class Client
     public Task<HttpResponseMessage> GetServerSnapshot(string serverId, CancellationToken cancellationToken)
     {
         return _client.GetAsync($"https://keeper.battlelog.com/snapshot/{serverId}", cancellationToken);
-    }
-
-
-    public sealed class Handler : RateLimitingHandler
-    {
-        public Handler(IOptions<PlayerFetcherOptions> options)
-            : base(new TokenBucketRateLimiter(new TokenBucketRateLimiterOptions
-            {
-                ReplenishmentPeriod = options.Value.BatchDelay,
-                TokensPerPeriod = options.Value.BatchSize,
-                TokenLimit = options.Value.BatchSize,
-                QueueLimit = int.MaxValue,
-            })) { }
     }
 };

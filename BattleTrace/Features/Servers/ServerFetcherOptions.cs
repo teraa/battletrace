@@ -1,5 +1,8 @@
-﻿using FluentValidation;
+﻿using System.Threading.RateLimiting;
+using FluentValidation;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Options;
+using Teraa.Extensions.AspNetCore;
 using Teraa.Extensions.Configuration;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -31,12 +34,25 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServerFetcher(this IServiceCollection services)
     {
+        const string key = "server";
+
         services
             .AddValidatedOptions<ServerFetcherOptions>()
             .AddHostedService<ServerFetcherService>()
-            .AddSingleton<Client.Handler>()
+            .AddKeyedSingleton<RateLimitingHandler>(key, (sp, _) =>
+            {
+                var options = sp.GetRequiredService<IOptions<ServerFetcherOptions>>();
+
+                return new RateLimitingHandler(new TokenBucketRateLimiter(new TokenBucketRateLimiterOptions
+                {
+                    ReplenishmentPeriod = options.Value.Delay,
+                    TokensPerPeriod = 1,
+                    TokenLimit = 1,
+                    QueueLimit = int.MaxValue,
+                }));
+            })
             .AddHttpClient<Client>(typeof(Client).FullName!)
-            .AddHttpMessageHandler<Client.Handler>();
+            .AddKeyedHttpMessageHandler<RateLimitingHandler>(key);
 
         return services;
     }

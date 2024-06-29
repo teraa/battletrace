@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Threading.RateLimiting;
-using Microsoft.Extensions.Options;
 
 namespace BattleTrace.Features.Servers;
 
@@ -24,18 +22,5 @@ public sealed class Client
         Debug.Assert(response is not null);
 
         return response;
-    }
-
-
-    public sealed class Handler : RateLimitingHandler
-    {
-        public Handler(IOptions<ServerFetcherOptions> options)
-            : base(new TokenBucketRateLimiter(new TokenBucketRateLimiterOptions
-            {
-                ReplenishmentPeriod = options.Value.Delay,
-                TokensPerPeriod = 1,
-                TokenLimit = 1,
-                QueueLimit = int.MaxValue,
-            })) { }
     }
 };
