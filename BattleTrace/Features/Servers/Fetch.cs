@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using BattleTrace.Data;
-using BattleTrace.Data.Models;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +35,7 @@ public static class Fetch
         {
             var sw = Stopwatch.StartNew();
 
-            var servers = new Dictionary<string, Server>();
+            var servers = new Dictionary<string, Client.Server>();
             int requestIndex = 0;
             int lastSuccessfulIndex = 0;
 
@@ -66,7 +65,7 @@ public static class Fetch
 
             var now = DateTimeOffset.UtcNow;
 
-            _ctx.ServerScans.Add(new ServerScan
+            _ctx.ServerScans.Add(new Data.Models.ServerScan
             {
                 Timestamp = now,
                 ServerCount = servers.Count,
@@ -89,19 +88,5 @@ public static class Fetch
 
             await _ctx.SaveChangesAsync(cancellationToken);
         }
-
-
-        public record Response(IReadOnlyList<Server> Data);
-
-        // ReSharper disable once ClassNeverInstantiated.Global
-        public record Server(
-            string Guid,
-            string Name,
-            string Map,
-            long MapMode,
-            string Country,
-            int TickRate,
-            string Ip,
-            int Port);
     }
 }

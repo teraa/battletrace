@@ -13,9 +13,9 @@ public sealed class Client
         _client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
     }
 
-    public async Task<Fetch.Handler.Response> GetServers(int offset, CancellationToken cancellationToken)
+    public async Task<Response> GetServers(int offset, CancellationToken cancellationToken)
     {
-        var response = await _client.GetFromJsonAsync<Fetch.Handler.Response>(
+        var response = await _client.GetFromJsonAsync<Response>(
             $"https://battlelog.battlefield.com/bf4/servers/getServers/pc/?offset={offset}&count=60",
             cancellationToken);
 
@@ -23,4 +23,17 @@ public sealed class Client
 
         return response;
     }
+
+    public record Response(IReadOnlyList<Server> Data);
+
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public record Server(
+        string Guid,
+        string Name,
+        string Map,
+        long MapMode,
+        string Country,
+        int TickRate,
+        string Ip,
+        int Port);
 };

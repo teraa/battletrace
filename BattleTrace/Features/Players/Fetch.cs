@@ -48,24 +48,15 @@ public static class Fetch
 
             _logger.LogDebug("Fetching players for {Servers} servers ", servers.Count);
 
-            var responses = new ConcurrentBag<(string serverId, DateTimeOffset updatedAt, Response response)>();
+            var responses = new ConcurrentBag<(string serverId, DateTimeOffset updatedAt, Client.Response response)>();
 
             await Parallel.ForEachAsync(servers, cancellationToken, async (server, ct) =>
             {
-                using var httpResponse = await _client.GetServerSnapshot(server.Id, ct);
-                var updatedAt = DateTimeOffset.UtcNow;
-
-                if (!httpResponse.IsSuccessStatusCode)
-                {
-                    _logger.LogDebug(
-                        "Failed fetching players for {ServerId}, server returned: {StatusCode}: {ReasonPhrase}",
-                        server.Id, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
-
+                var response = await _client.GetServerSnapshot(server.Id, ct);
+                if (response is null)
                     return;
-                }
 
-                var response = await httpResponse.Content.ReadFromJsonAsync<Response>(ct);
-                Debug.Assert(response is not null);
+                var updatedAt = DateTimeOffset.UtcNow;
 
                 server.UpdatedAt = updatedAt;
                 responses.Add((server.Id, updatedAt, response));
@@ -101,7 +92,8 @@ public static class Fetch
                 .ToList();
 
             sw.Stop();
-            _logger.LogInformation("Fetched {Players} players from {Servers} servers in {Duration}", players.Count, servers.Count, sw.Elapsed);
+            _logger.LogInformation("Fetched {Players} players from {Servers} servers in {Duration}", players.Count,
+                servers.Count, sw.Elapsed);
 
             _ctx.PlayerScans.Add(new PlayerScan
             {
@@ -119,22 +111,5 @@ public static class Fetch
             _ctx.Players.AddRange(players);
             await _ctx.SaveChangesAsync(cancellationToken);
         }
-
-
-        private record Response(Snapshot Snapshot);
-
-        private record Snapshot(Dictionary<string, TeamInfo> TeamInfo);
-
-        private record TeamInfo(int Faction, Dictionary<string, Player> Players);
-
-        private record Player(
-            string Name,
-            string Tag,
-            int Rank,
-            long Score,
-            int Kills,
-            int Deaths,
-            int Squad,
-            int Role);
     }
 }
