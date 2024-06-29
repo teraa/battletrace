@@ -49,83 +49,65 @@ public static class Fetch
                 .Select(x => x.Id)
                 .ToList();
 
-            int batchCount = (int) Math.Ceiling((double) serverIds.Count / _options.BatchSize);
-
-            _logger.LogDebug(
-                "Fetching players for {Servers} servers in {Batches} batches with minimum expected duration of {Duration}",
-                serverIds.Count, batchCount, batchCount * _options.BatchDelay);
+            _logger.LogDebug("Fetching players for {Servers} servers ", serverIds.Count);
 
             var players = new Dictionary<string, Data.Models.Player>();
 
-            for (int i = 0; i < serverIds.Count; i += _options.BatchSize)
+            var serverTasks = serverIds
+                .Select(x => new
+                {
+                    ServerId = x,
+                    Task = _client.GetServerSnapshot(x, cancellationToken)
+                })
+                .ToList();
+
+            await Task.WhenAll(serverTasks.Select(x => x.Task));
+            var now = DateTimeOffset.UtcNow;
+
+            foreach (var serverTask in serverTasks)
             {
-                if (i != 0)
+                using var httpResponse = await serverTask.Task;
+
+                if (!httpResponse.IsSuccessStatusCode)
                 {
-                    _logger.LogDebug("Delaying next batch by {Delay}", _options.BatchDelay);
-                    await Task.Delay(_options.BatchDelay, cancellationToken);
+                    _logger.LogDebug(
+                        "Failed fetching players for {ServerId}, server returned: {StatusCode}: {ReasonPhrase}",
+                        serverTask.ServerId, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
+                    continue;
                 }
 
-                _logger.LogDebug("Request batch: {CurrentBatch}/{BatchCount}",
-                    i / _options.BatchSize, batchCount);
+                var server = await _ctx.Servers
+                    .Where(x => x.Id == serverTask.ServerId)
+                    .FirstAsync(cancellationToken);
 
-                var serverTasks = serverIds
-                    .Skip(i)
-                    .Take(_options.BatchSize)
-                    .Select(x => new
-                    {
-                        ServerId = x,
-                        Task = _client.GetServerSnapshot(x, cancellationToken)
-                    })
-                    .ToList();
+                server.UpdatedAt = now;
 
-                await Task.WhenAll(serverTasks.Select(x => x.Task));
-                var now = DateTimeOffset.UtcNow;
+                var response =
+                    await httpResponse.Content.ReadFromJsonAsync<Response>(cancellationToken: cancellationToken);
 
-                foreach (var serverTask in serverTasks)
-                {
-                    using var httpResponse = await serverTask.Task;
+                Debug.Assert(response is { });
 
-                    if (!httpResponse.IsSuccessStatusCode)
-                    {
-                        _logger.LogDebug(
-                            "Failed fetching players for {ServerId}, server returned: {StatusCode}: {ReasonPhrase}",
-                            serverTask.ServerId, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
-                        continue;
-                    }
+                var playersBatch = response.Snapshot.TeamInfo
+                    .SelectMany(t => t.Value.Players
+                        .Select(p => new Data.Models.Player
+                        {
+                            Id = p.Key,
+                            UpdatedAt = now,
+                            ServerId = serverTask.ServerId,
+                            Faction = t.Value.Faction,
+                            Team = int.Parse(t.Key),
+                            Name = p.Value.Name,
+                            Tag = p.Value.Tag,
+                            Rank = p.Value.Rank,
+                            Score = p.Value.Score,
+                            Kills = p.Value.Kills,
+                            Deaths = p.Value.Deaths,
+                            Squad = p.Value.Squad,
+                            Role = p.Value.Role,
+                        }));
 
-                    var server = await _ctx.Servers
-                        .Where(x => x.Id == serverTask.ServerId)
-                        .FirstAsync(cancellationToken);
-
-                    server.UpdatedAt = now;
-
-                    var response =
-                        await httpResponse.Content.ReadFromJsonAsync<Response>(cancellationToken: cancellationToken);
-
-                    Debug.Assert(response is { });
-
-                    var playersBatch = response.Snapshot.TeamInfo
-                        .SelectMany(t => t.Value.Players
-                            .Select(p => new Data.Models.Player
-                            {
-                                Id = p.Key,
-                                UpdatedAt = now,
-                                ServerId = serverTask.ServerId,
-                                Faction = t.Value.Faction,
-                                Team = int.Parse(t.Key),
-                                Name = p.Value.Name,
-                                Tag = p.Value.Tag,
-                                Rank = p.Value.Rank,
-                                Score = p.Value.Score,
-                                Kills = p.Value.Kills,
-                                Deaths = p.Value.Deaths,
-                                Squad = p.Value.Squad,
-                                Role = p.Value.Role,
-                            }));
-
-                    foreach (var player in playersBatch)
-                        players[player.Id] = player;
-                }
+                foreach (var player in playersBatch)
+                    players[player.Id] = player;
             }
 
             sw.Stop();

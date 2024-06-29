@@ -9,8 +9,8 @@ namespace BattleTrace.Features.Players;
 public class PlayerFetcherOptions
 {
     public TimeSpan Interval { get; init; } = TimeSpan.FromMinutes(5);
-    public TimeSpan BatchDelay { get; init; } = TimeSpan.FromSeconds(2);
-    public int BatchSize { get; init; } = 60;
+    public TimeSpan BatchDelay { get; init; } = TimeSpan.FromSeconds(1);
+    public int BatchSize { get; init; } = 30;
     public TimeSpan MaxServerAge { get; set; } = TimeSpan.FromDays(2);
 
     [UsedImplicitly]
@@ -33,7 +33,9 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<PlayerFetcherService>()
             .AddHostedService<PlayerFetcherService>()
-            .AddHttpClient<Client>();
+            .AddSingleton<Client.Handler>()
+            .AddHttpClient<Client>()
+            .AddHttpMessageHandler<Client.Handler>();
 
         return services;
     }
