@@ -1,6 +1,6 @@
 ﻿using System.Threading.RateLimiting;
 
-namespace BattleTrace;
+namespace BattleTrace.Common;
 
 public sealed class RateLimitingHandler : DelegatingHandler
 {
