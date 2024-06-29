@@ -13,6 +13,8 @@ namespace BattleTrace.Data.Models
         public string Name { get; set; }
         public string IpAddress { get; set; }
         public int Port { get; set; }
+        public string Country { get; set; }
+        public int TickRate { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
 
         public ICollection<Player> Players { get; set; }

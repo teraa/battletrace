@@ -83,6 +83,8 @@ public static class Fetch
                 Name = x.Name,
                 IpAddress = x.Ip,
                 Port = x.Port,
+                Country = x.Country,
+                TickRate = x.TickRate,
                 UpdatedAt = now,
             }));
 
