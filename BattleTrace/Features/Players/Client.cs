@@ -25,7 +25,7 @@ public sealed class Client
             return await httpResponse.Content.ReadFromJsonAsync<Response>(cancellationToken);
 
         _logger.LogDebug(
-            "Failed fetching players for {ServerId}, server returned: {StatusCode}: {ReasonPhrase}", serverId,
+            "Failed fetching players for {ServerId}, server returned: {StatusCode} ({ReasonPhrase})", serverId,
             (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
 
         return null;
