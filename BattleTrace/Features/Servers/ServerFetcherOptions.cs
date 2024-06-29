@@ -33,7 +33,10 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddValidatedOptions<ServerFetcherOptions>()
-            .AddHostedService<ServerFetcherService>();
+            .AddHostedService<ServerFetcherService>()
+            .AddSingleton<Client.Handler>()
+            .AddHttpClient<Client>(typeof(Client).FullName!)
+            .AddHttpMessageHandler<Client.Handler>();
 
         return services;
     }

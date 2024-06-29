@@ -18,13 +18,13 @@ public static class Fetch
         private readonly ServerFetcherOptions _options;
         private readonly AppDbContext _ctx;
         private readonly ILogger<Handler> _logger;
-        private readonly HttpClient _client;
+        private readonly Client _client;
 
         public Handler(
             IOptionsMonitor<ServerFetcherOptions> options,
             AppDbContext ctx,
             ILogger<Handler> logger,
-            HttpClient client)
+            Client client)
         {
             _ctx = ctx;
             _logger = logger;
@@ -35,8 +35,6 @@ public static class Fetch
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
 
             var servers = new Dictionary<string, Server>();
             int requestIndex = 0;
@@ -44,15 +42,8 @@ public static class Fetch
 
             do
             {
-                if (requestIndex != 0)
-                    await Task.Delay(_options.Delay, cancellationToken);
-
                 int offset = requestIndex * _options.Offset;
-                var response = await _client.GetFromJsonAsync<Response>(
-                    $"https://battlelog.battlefield.com/bf4/servers/getServers/pc/?offset={offset}&count=60",
-                    cancellationToken);
-
-                Debug.Assert(response is not null);
+                var response = await _client.GetServers(offset, cancellationToken);
 
                 int serversCount = servers.Count;
                 foreach (var server in response.Data)
@@ -100,10 +91,10 @@ public static class Fetch
         }
 
 
-        private record Response(IReadOnlyList<Server> Data);
+        public record Response(IReadOnlyList<Server> Data);
 
-        // ReSharper disable once ClassNeverInstantiated.Local
-        private record Server(
+        // ReSharper disable once ClassNeverInstantiated.Global
+        public record Server(
             string Guid,
             string Name,
             string Map,

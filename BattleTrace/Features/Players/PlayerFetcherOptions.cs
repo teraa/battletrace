@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<PlayerFetcherService>()
             .AddHostedService<PlayerFetcherService>()
             .AddSingleton<Client.Handler>()
-            .AddHttpClient<Client>()
+            .AddHttpClient<Client>(typeof(Client).FullName!)
             .AddHttpMessageHandler<Client.Handler>();
 
         return services;
