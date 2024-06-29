@@ -1,4 +1,5 @@
 ﻿using System.Threading.RateLimiting;
+using BattleTrace.Common;
 using FluentValidation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Options;
@@ -30,11 +31,9 @@ public class PlayerFetcherOptions
         {
             RuleFor(x => x.Interval).GreaterThan(TimeSpan.Zero);
             RuleFor(x => x.MaxServerAge).GreaterThan(TimeSpan.Zero);
-            RuleFor(x => x.RateLimiterOptions).NotNull();
-            RuleFor(x => x.RateLimiterOptions.ReplenishmentPeriod).GreaterThan(TimeSpan.Zero);
-            RuleFor(x => x.RateLimiterOptions.TokensPerPeriod).GreaterThan(0);
-            RuleFor(x => x.RateLimiterOptions.TokenLimit).GreaterThan(0);
-            RuleFor(x => x.RateLimiterOptions.QueueLimit).GreaterThan(0);
+            RuleFor(x => x.RateLimiterOptions)
+                .NotNull()
+                .SetValidator(validator: new TokenBucketRateLimiterOptionsValidator());
         }
     }
 }
