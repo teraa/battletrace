@@ -27,31 +27,15 @@ public sealed class Client
     }
 
 
-    public sealed class Handler : DelegatingHandler
+    public sealed class Handler : RateLimitingHandler
     {
-        private readonly RateLimiter _limiter;
-
         public Handler(IOptions<ServerFetcherOptions> options)
-        {
-            _limiter = new TokenBucketRateLimiter(
-                new TokenBucketRateLimiterOptions // TODO: accept this as ctor arg and reuse this type for players
-                {
-                    ReplenishmentPeriod = options.Value.Delay,
-                    TokensPerPeriod = 1,
-                    TokenLimit = 1,
-                    QueueLimit = int.MaxValue,
-                });
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            using var lease = await _limiter.AcquireAsync(1, cancellationToken);
-
-            if (!lease.IsAcquired)
-                throw new InvalidOperationException();
-
-            return await base.SendAsync(request, cancellationToken);
-        }
+            : base(new TokenBucketRateLimiter(new TokenBucketRateLimiterOptions
+            {
+                ReplenishmentPeriod = options.Value.Delay,
+                TokensPerPeriod = 1,
+                TokenLimit = 1,
+                QueueLimit = int.MaxValue,
+            })) { }
     }
 };
