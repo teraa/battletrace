@@ -13,9 +13,15 @@ namespace BattleTrace.Features.Servers;
 public class ServerFetcherOptions
 {
     public TimeSpan Interval { get; init; } = TimeSpan.FromHours(12);
-    public TimeSpan Delay { get; init; } = TimeSpan.FromSeconds(0.5);
     public int Offset { get; init; } = 45;
     public int Threshold { get; init; } = 10;
+    public TokenBucketRateLimiterOptions RateLimiterOptions { get; init; } = new()
+    {
+        ReplenishmentPeriod = TimeSpan.FromSeconds(0.5),
+        TokensPerPeriod = 1,
+        TokenLimit = 1,
+        QueueLimit = int.MaxValue,
+    };
 
     [UsedImplicitly]
     public class Validator : AbstractValidator<ServerFetcherOptions>
@@ -23,9 +29,13 @@ public class ServerFetcherOptions
         public Validator()
         {
             RuleFor(x => x.Interval).GreaterThan(TimeSpan.Zero);
-            RuleFor(x => x.Delay).GreaterThan(TimeSpan.Zero);
             RuleFor(x => x.Offset).GreaterThan(0);
             RuleFor(x => x.Threshold).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.RateLimiterOptions).NotNull();
+            RuleFor(x => x.RateLimiterOptions.ReplenishmentPeriod).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.RateLimiterOptions.TokensPerPeriod).GreaterThan(0);
+            RuleFor(x => x.RateLimiterOptions.TokenLimit).GreaterThan(0);
+            RuleFor(x => x.RateLimiterOptions.QueueLimit).GreaterThan(0);
         }
     }
 }
@@ -34,25 +44,18 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServerFetcher(this IServiceCollection services)
     {
-        const string key = "server";
+        string name = typeof(Client).FullName!;
 
         services
             .AddValidatedOptions<ServerFetcherOptions>()
             .AddHostedService<ServerFetcherService>()
-            .AddKeyedSingleton<RateLimitingHandler>(key, (sp, _) =>
+            .AddKeyedSingleton<RateLimitingHandler>(serviceKey: name, (sp, _) =>
             {
                 var options = sp.GetRequiredService<IOptions<ServerFetcherOptions>>();
-
-                return new RateLimitingHandler(new TokenBucketRateLimiter(new TokenBucketRateLimiterOptions
-                {
-                    ReplenishmentPeriod = options.Value.Delay,
-                    TokensPerPeriod = 1,
-                    TokenLimit = 1,
-                    QueueLimit = int.MaxValue,
-                }));
+                return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));
             })
-            .AddHttpClient<Client>(typeof(Client).FullName!)
-            .AddKeyedHttpMessageHandler<RateLimitingHandler>(key);
+            .AddHttpClient<Client>(name)
+            .AddKeyedHttpMessageHandler<RateLimitingHandler>(key: name);
 
         return services;
     }
