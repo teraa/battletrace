@@ -20,13 +20,13 @@ public static class Fetch
         private readonly PlayerFetcherOptions _options;
         private readonly AppDbContext _ctx;
         private readonly ILogger<Handler> _logger;
-        private readonly HttpClient _client;
+        private readonly Client _client;
 
         public Handler(
             IOptionsMonitor<PlayerFetcherOptions> options,
             AppDbContext ctx,
             ILogger<Handler> logger,
-            HttpClient client)
+            Client client)
         {
             _ctx = ctx;
             _logger = logger;
@@ -37,8 +37,6 @@ public static class Fetch
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
 
             var scanAt = DateTimeOffset.UtcNow;
             var minTimestamp = scanAt - _options.MaxServerAge;
@@ -76,7 +74,7 @@ public static class Fetch
                     .Select(x => new
                     {
                         ServerId = x,
-                        Task = _client.GetAsync($"https://keeper.battlelog.com/snapshot/{x}", cancellationToken)
+                        Task = _client.GetServerSnapshot(x, cancellationToken)
                     })
                     .ToList();
 

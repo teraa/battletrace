@@ -32,7 +32,8 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddSingleton<PlayerFetcherService>()
-            .AddHostedService<PlayerFetcherService>();
+            .AddHostedService<PlayerFetcherService>()
+            .AddHttpClient<Client>();
 
         return services;
     }
