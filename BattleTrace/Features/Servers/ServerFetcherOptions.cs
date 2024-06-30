@@ -49,7 +49,7 @@ public static class ServiceCollectionExtensions
         services
             .AddValidatedOptions<ServerFetcherOptions>()
             .AddHostedService<ServerFetcherService>()
-            .AddKeyedSingleton<RateLimitingHandler>(serviceKey: name, (sp, _) =>
+            .AddKeyedTransient<RateLimitingHandler>(serviceKey: name, (sp, _) =>
             {
                 var options = sp.GetRequiredService<IOptions<ServerFetcherOptions>>();
                 return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));

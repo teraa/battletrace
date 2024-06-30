@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         services
             .AddValidatedOptions<PlayerFetcherOptions>()
             .AddHostedService<PlayerFetcherService>()
-            .AddKeyedSingleton<RateLimitingHandler>(serviceKey: name, (sp, _) =>
+            .AddKeyedTransient<RateLimitingHandler>(serviceKey: name, (sp, _) =>
             {
                 var options = sp.GetRequiredService<IOptions<PlayerFetcherOptions>>();
                 return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));
