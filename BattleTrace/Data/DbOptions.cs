@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using BattleTrace.Migrations;
+using FluentValidation;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
