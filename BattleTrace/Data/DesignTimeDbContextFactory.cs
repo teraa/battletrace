@@ -17,7 +17,7 @@ internal sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<A
         var dbOptions = config.GetValidatedOptionsOrDefault<DbOptions>();
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite(dbOptions.ConnectionString,
+            .UseSqlite(dbOptions.ConnectionStringSqlite,
                 contextOptions =>
                 {
                     contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
