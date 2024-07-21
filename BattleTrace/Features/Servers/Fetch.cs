@@ -17,17 +17,17 @@ public static class Fetch
         private readonly ServerFetcherOptions _options;
         private readonly AppDbContext _ctx;
         private readonly ILogger<Handler> _logger;
-        private readonly Client _client;
+        private readonly IBattlelogApi _api;
 
         public Handler(
             IOptionsMonitor<ServerFetcherOptions> options,
             AppDbContext ctx,
             ILogger<Handler> logger,
-            Client client)
+            IBattlelogApi api)
         {
             _ctx = ctx;
             _logger = logger;
-            _client = client;
+            _api = api;
             _options = options.CurrentValue;
         }
 
@@ -35,14 +35,14 @@ public static class Fetch
         {
             var sw = Stopwatch.StartNew();
 
-            var servers = new Dictionary<string, Client.Server>();
+            var servers = new Dictionary<string, IBattlelogApi.Server>();
             int requestIndex = 0;
             int lastSuccessfulIndex = 0;
 
             do
             {
                 int offset = requestIndex * _options.Offset;
-                var response = await _client.GetServers(offset, cancellationToken);
+                var response = await _api.GetServers(offset, cancellationToken: cancellationToken);
 
                 int serversCount = servers.Count;
                 foreach (var server in response.Data)
