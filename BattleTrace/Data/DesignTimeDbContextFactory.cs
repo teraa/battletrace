@@ -17,7 +17,7 @@ internal sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<A
         var dbOptions = config.GetValidatedOptionsOrDefault<DbOptions>();
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite(dbOptions.ConnectionStringSqlite,
+            .UseNpgsql(dbOptions.ConnectionString,
                 contextOptions =>
                 {
                     contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);

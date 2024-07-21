@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BattleTrace.MigrationsPsql
+namespace BattleTrace.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration

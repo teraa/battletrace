@@ -54,8 +54,8 @@ public static class Index
 
             if (request.NamePattern is {Length: > 0})
             {
-                query = query.Where(x =>
-                    EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
+                // query = query.Where(x =>
+                //     EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
             }
 
             var lastPlayerScan = await _ctx.PlayerScans
