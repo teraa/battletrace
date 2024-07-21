@@ -21,17 +21,17 @@ public static class Fetch
         private readonly PlayerFetcherOptions _options;
         private readonly AppDbContext _ctx;
         private readonly ILogger<Handler> _logger;
-        private readonly Client _client;
+        private readonly IKeeperBattlelogApi _api;
 
         public Handler(
             IOptionsMonitor<PlayerFetcherOptions> options,
             AppDbContext ctx,
             ILogger<Handler> logger,
-            Client client)
+            IKeeperBattlelogApi api)
         {
             _ctx = ctx;
             _logger = logger;
-            _client = client;
+            _api = api;
             _options = options.CurrentValue;
         }
 
@@ -48,18 +48,24 @@ public static class Fetch
 
             _logger.LogDebug("Fetching players for {Servers} servers ", servers.Count);
 
-            var responses = new ConcurrentBag<(string serverId, DateTimeOffset updatedAt, Client.Response response)>();
+            var responses = new ConcurrentBag<(string serverId, DateTimeOffset updatedAt, IKeeperBattlelogApi.SnapshotResponse response)>();
 
             await Parallel.ForEachAsync(servers, cancellationToken, async (server, ct) =>
             {
-                var response = await _client.GetServerSnapshot(server.Id, ct);
-                if (response is null)
+                var httpResponse = await _api.GetSnapshot(server.Id, ct);
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogDebug(
+                        "Failed fetching players for {ServerId}, server returned: {StatusCode} ({ReasonPhrase})",
+                        server.Id, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
+
                     return;
+                }
 
                 var updatedAt = DateTimeOffset.UtcNow;
 
                 server.UpdatedAt = updatedAt;
-                responses.Add((server.Id, updatedAt, response));
+                responses.Add((server.Id, updatedAt, httpResponse.Content!));
             });
 
             var players = responses.SelectMany(x => x.response.Snapshot.TeamInfo
@@ -73,7 +79,7 @@ public static class Fetch
                         })))
                 .GroupBy(x => x.Player.Key)
                 .Select(group => group.MaxBy(x => x.UpdatedAt)!)
-                .Select(x => new Data.Models.Player
+                .Select(x => new Player
                 {
                     Id = x.Player.Key,
                     UpdatedAt = x.UpdatedAt,
