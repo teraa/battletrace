@@ -11,7 +11,8 @@ public sealed class RateLimitingHandler : DelegatingHandler
         _limiter = limiter;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
         using var lease = await _limiter.AcquireAsync(1, cancellationToken);
