@@ -1,4 +1,5 @@
-﻿using BattleTrace.Data;
+﻿using BattleTrace.Common;
+using BattleTrace.Data;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
@@ -54,8 +55,9 @@ public static class Index
 
             if (request.NamePattern is {Length: > 0})
             {
-                // query = query.Where(x =>
-                //     EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
+                var pattern = Helpers.StringToLikePattern(request.NamePattern);
+
+                query = query.Where(x => EF.Functions.ILike(x.Name, pattern, @"\"));
             }
 
             var lastPlayerScan = await _ctx.PlayerScans

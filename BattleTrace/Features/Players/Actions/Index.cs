@@ -1,4 +1,5 @@
-﻿using BattleTrace.Data;
+﻿using BattleTrace.Common;
+using BattleTrace.Data;
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
@@ -62,14 +63,16 @@ public static class Index
 
             if (request.NamePattern is {Length: > 0})
             {
-                // query = query.Where(x =>
-                //     EF.Functions.Glob(x.Name.ToLower(), request.NamePattern.ToLowerInvariant()));
+                var pattern = Helpers.StringToLikePattern(request.NamePattern);
+
+                query = query.Where(x => EF.Functions.ILike(x.Name, pattern, @"\"));
             }
 
             if (request.TagPattern is {Length: > 0})
             {
-                // query = query.Where(x =>
-                //     EF.Functions.Glob(x.Tag.ToLower(), request.TagPattern.ToLowerInvariant()));
+                var pattern = Helpers.StringToLikePattern(request.TagPattern);
+
+                query = query.Where(x => EF.Functions.ILike(x.Tag, pattern, @"\"));
             }
 
             if (request.ActiveOnly)
