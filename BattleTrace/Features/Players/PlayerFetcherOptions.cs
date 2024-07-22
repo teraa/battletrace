@@ -16,7 +16,7 @@ namespace BattleTrace.Features.Players;
 #pragma warning disable CS8618
 public class PlayerFetcherOptions
 {
-    public TimeSpan Interval { get; init; } = TimeSpan.FromMinutes(5);
+    public string Cron { get; init; } = "*/5 * * * *";
     public TimeSpan MaxServerAge { get; init; } = TimeSpan.FromDays(2);
 
     public TokenBucketRateLimiterOptions RateLimiterOptions { get; init; } = new()
@@ -32,7 +32,7 @@ public class PlayerFetcherOptions
     {
         public Validator()
         {
-            RuleFor(x => x.Interval).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.Cron).ValidCronExpression();
             RuleFor(x => x.MaxServerAge).GreaterThan(TimeSpan.Zero);
             RuleFor(x => x.RateLimiterOptions)
                 .NotNull()
@@ -49,7 +49,6 @@ public static class ServiceCollectionExtensions
 
         services
             .AddValidatedOptions<PlayerFetcherOptions>()
-            .AddHostedService<PlayerFetcherService>()
             .AddRefitClient<IKeeperBattlelogApi>()
             .ConfigureHttpClient(client =>
             {
@@ -70,7 +69,8 @@ public static class ServiceCollectionExtensions
             {
                 var options = sp.GetRequiredService<IOptions<PlayerFetcherOptions>>();
                 return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));
-            });
+            })
+            .AddAsyncInitializer<PlayerFetcherJobInitializer>();
 
         return services;
     }

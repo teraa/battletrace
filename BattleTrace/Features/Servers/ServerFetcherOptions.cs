@@ -16,7 +16,7 @@ namespace BattleTrace.Features.Servers;
 #pragma warning disable CS8618
 public class ServerFetcherOptions
 {
-    public TimeSpan Interval { get; init; } = TimeSpan.FromHours(12);
+    public string Cron { get; init; } = "0 */12 * * *";
     public int Offset { get; init; } = 45;
     public int Threshold { get; init; } = 10;
 
@@ -33,7 +33,7 @@ public class ServerFetcherOptions
     {
         public Validator()
         {
-            RuleFor(x => x.Interval).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.Cron).ValidCronExpression();
             RuleFor(x => x.Offset).GreaterThan(0);
             RuleFor(x => x.Threshold).GreaterThanOrEqualTo(0);
             RuleFor(x => x.RateLimiterOptions)
@@ -51,7 +51,6 @@ public static class ServiceCollectionExtensions
 
         services
             .AddValidatedOptions<ServerFetcherOptions>()
-            .AddHostedService<ServerFetcherService>()
             .AddRefitClient<IBattlelogApi>()
             .ConfigureHttpClient(client =>
             {
@@ -72,7 +71,8 @@ public static class ServiceCollectionExtensions
             {
                 var options = sp.GetRequiredService<IOptions<ServerFetcherOptions>>();
                 return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));
-            });
+            })
+            .AddAsyncInitializer<ServerFetcherJobInitializer>();
 
         return services;
     }
