@@ -96,6 +96,8 @@ public class FetchPlayers
         _logger.LogInformation("Fetched {Players} players from {Servers} servers in {Duration}", players.Count,
             serverIds.Count, sw.Elapsed);
 
+        await using var tsx = await _ctx.Database.BeginTransactionAsync(cancellationToken);
+
         await _ctx.Servers
             .Where(x => serverIds.Contains(x.Id))
             .ExecuteUpdateAsync(setters => setters
@@ -124,5 +126,6 @@ public class FetchPlayers
         });
 
         await _ctx.SaveChangesAsync(cancellationToken);
+        await tsx.CommitAsync(cancellationToken);
     }
 }

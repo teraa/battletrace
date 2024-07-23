@@ -72,6 +72,8 @@ public class FetchServers
             UpdatedAt = now,
         });
 
+        await using var tsx = await _ctx.Database.BeginTransactionAsync(cancellationToken);
+
         // Just delete and re-add all entries instead of bothering with change-tracking
 
         await _ctx.Servers
@@ -88,5 +90,6 @@ public class FetchServers
         });
 
         await _ctx.SaveChangesAsync(cancellationToken);
+        await tsx.CommitAsync(cancellationToken);
     }
 }
