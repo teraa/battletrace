@@ -12,17 +12,17 @@ using Microsoft.Extensions.Options;
 namespace BattleTrace.Features.Players;
 
 [UsedImplicitly]
-public class Fetch
+public class FetchPlayers
 {
     private readonly PlayerFetcherOptions _options;
     private readonly AppDbContext _ctx;
-    private readonly ILogger<Fetch> _logger;
+    private readonly ILogger<FetchPlayers> _logger;
     private readonly IKeeperBattlelogApi _api;
 
-    public Fetch(
+    public FetchPlayers(
         IOptionsMonitor<PlayerFetcherOptions> options,
         AppDbContext ctx,
-        ILogger<Fetch> logger,
+        ILogger<FetchPlayers> logger,
         IKeeperBattlelogApi api)
     {
         _ctx = ctx;

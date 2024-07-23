@@ -8,17 +8,17 @@ using Microsoft.Extensions.Options;
 namespace BattleTrace.Features.Servers;
 
 [UsedImplicitly]
-public class Fetch
+public class FetchServers
 {
     private readonly ServerFetcherOptions _options;
     private readonly AppDbContext _ctx;
-    private readonly ILogger<Fetch> _logger;
+    private readonly ILogger<FetchServers> _logger;
     private readonly IBattlelogApi _api;
 
-    public Fetch(
+    public FetchServers(
         IOptionsMonitor<ServerFetcherOptions> options,
         AppDbContext ctx,
-        ILogger<Fetch> logger,
+        ILogger<FetchServers> logger,
         IBattlelogApi api)
     {
         _ctx = ctx;
