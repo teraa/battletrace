@@ -84,7 +84,7 @@ public static class Index
                 .OrderByDescending(x => x.Players)
                 .AsQueryable();
 
-            if (request.Limit is { })
+            if (request.Limit is not null)
                 finalQuery = finalQuery.Take(request.Limit.Value);
 
             var results = await finalQuery

@@ -90,7 +90,7 @@ public static class Index
 
             query = query.OrderBy(x => x.Name);
 
-            if (request.Limit is { })
+            if (request.Limit is not null)
                 query = query.Take(request.Limit.Value);
 
             var results = await query
