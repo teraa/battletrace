@@ -20,7 +20,7 @@ public sealed class PlayerFetcherJobInitializer : IAsyncInitializer
     public Task InitializeAsync(CancellationToken cancellationToken)
     {
         _recurringJobManager.AddOrUpdate<FetchPlayers>(
-            nameof(FetchPlayers),
+            nameof(Players),
             handler => handler.Handle(CancellationToken.None),
             _options.Cron
         );
