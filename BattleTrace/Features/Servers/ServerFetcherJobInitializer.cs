@@ -1,6 +1,5 @@
 ﻿using Extensions.Hosting.AsyncInitialization;
 using Hangfire;
-using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace BattleTrace.Features.Servers;
