@@ -15,6 +15,7 @@ namespace BattleTrace.Data.Models
         public int Faction { get; set; }
         public int Team { get; set; }
         public string Name { get; set; }
+        public string NormalizedName { get; set; }
         public string Tag { get; set; }
         public int Rank { get; set; }
         public long Score { get; set; }
@@ -30,7 +31,7 @@ namespace BattleTrace.Data.Models
     {
         public void Configure(EntityTypeBuilder<Player> builder)
         {
-            builder.HasIndex(x => x.Name);
+            builder.HasIndex(x => x.NormalizedName);
             builder.HasIndex(x => x.Tag);
             builder.HasIndex(x => x.UpdatedAt);
         }

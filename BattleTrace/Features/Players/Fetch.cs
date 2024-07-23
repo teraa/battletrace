@@ -87,6 +87,7 @@ public static class Fetch
                     Faction = x.Team.Value.Faction,
                     Team = int.Parse(x.Team.Key),
                     Name = x.Player.Value.Name,
+                    NormalizedName = x.Player.Value.Name.ToLowerInvariant(),
                     Tag = x.Player.Value.Tag,
                     Rank = x.Player.Value.Rank,
                     Score = x.Player.Value.Score,

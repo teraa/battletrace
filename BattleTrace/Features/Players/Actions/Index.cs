@@ -63,9 +63,9 @@ public static class Index
 
             if (request.NamePattern is {Length: > 0})
             {
-                var pattern = Helpers.StringToLikePattern(request.NamePattern);
+                var pattern = Helpers.StringToLikePattern(request.NamePattern.ToLowerInvariant());
 
-                query = query.Where(x => EF.Functions.ILike(x.Name, pattern, @"\"));
+                query = query.Where(x => EF.Functions.Like(x.NormalizedName, pattern, @"\"));
             }
 
             if (request.TagPattern is {Length: > 0})
@@ -88,7 +88,7 @@ public static class Index
                 query = query.Where(x => x.UpdatedAt >= lastScan);
             }
 
-            query = query.OrderBy(x => x.Name);
+            query = query.OrderBy(x => x.NormalizedName);
 
             if (request.Limit is not null)
                 query = query.Take(request.Limit.Value);
