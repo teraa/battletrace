@@ -19,6 +19,7 @@ public class MigrationInitializer : IAsyncInitializer
         if (_ctx.Database.HasPendingModelChanges())
             throw new InvalidOperationException("Changes have been made to the model since the last migration. Add a new migration.");
 
+        _ctx.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
         await _ctx.Database.MigrateAsync(cancellationToken);
     }
 }
