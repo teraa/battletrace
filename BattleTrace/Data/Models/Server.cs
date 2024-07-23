@@ -25,6 +25,7 @@ namespace BattleTrace.Data.Models
         public void Configure(EntityTypeBuilder<Server> builder)
         {
             builder.HasIndex(x => x.Name);
+            builder.HasIndex(x => x.IpAddress);
         }
     }
 }

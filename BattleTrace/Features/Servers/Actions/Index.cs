@@ -13,6 +13,7 @@ public static class Index
     public record Query(
         string? NamePattern,
         Guid? Id,
+        [ModelBinder(Name = "ip")] string? IpAddress,
         int? Limit = null
     ) : IRequest<IActionResult>;
 
@@ -51,6 +52,11 @@ public static class Index
             if (request.Id is not null)
             {
                 query = query.Where(x => x.Id == request.Id.ToString());
+            }
+
+            if (request.IpAddress is not null)
+            {
+                query = query.Where(x => x.IpAddress == request.IpAddress);
             }
 
             if (request.NamePattern is {Length: > 0})
