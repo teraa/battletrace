@@ -4,7 +4,6 @@ using BattleTrace.Data;
 using BattleTrace.Data.Models;
 using JetBrains.Annotations;
 using LinqToDB.EntityFrameworkCore;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -12,22 +11,18 @@ using Microsoft.Extensions.Options;
 
 namespace BattleTrace.Features.Players;
 
-public static class Fetch
-{
-    public record Command : IRequest;
-
     [UsedImplicitly]
-    public class Handler : IRequestHandler<Command>
+    public class Fetch
     {
         private readonly PlayerFetcherOptions _options;
         private readonly AppDbContext _ctx;
-        private readonly ILogger<Handler> _logger;
+        private readonly ILogger<Fetch> _logger;
         private readonly IKeeperBattlelogApi _api;
 
-        public Handler(
+        public Fetch(
             IOptionsMonitor<PlayerFetcherOptions> options,
             AppDbContext ctx,
-            ILogger<Handler> logger,
+            ILogger<Fetch> logger,
             IKeeperBattlelogApi api)
         {
             _ctx = ctx;
@@ -36,7 +31,7 @@ public static class Fetch
             _options = options.CurrentValue;
         }
 
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task Handle(CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -131,4 +126,3 @@ public static class Fetch
             await _ctx.SaveChangesAsync(cancellationToken);
         }
     }
-}

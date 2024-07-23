@@ -20,9 +20,9 @@ public sealed class ServerFetcherJobInitializer : IAsyncInitializer
 
     public Task InitializeAsync(CancellationToken cancellationToken)
     {
-        _recurringJobManager.AddOrUpdate<ISender>(
+        _recurringJobManager.AddOrUpdate<Fetch>(
             typeof(Fetch).FullName,
-            sender => sender.Send(new Fetch.Command(), CancellationToken.None),
+            handler => handler.Handle(CancellationToken.None),
             _options.Cron
         );
 
