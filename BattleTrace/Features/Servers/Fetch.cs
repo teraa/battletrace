@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using BattleTrace.Data;
 using JetBrains.Annotations;
+using LinqToDB.EntityFrameworkCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -65,19 +66,7 @@ public static class Fetch
 
             var now = DateTimeOffset.UtcNow;
 
-            _ctx.ServerScans.Add(new Data.Models.ServerScan
-            {
-                Timestamp = now,
-                ServerCount = servers.Count,
-            });
-
-            var serversToUpdate = await _ctx.Servers
-                .Where(x => servers.Keys.Contains(x.Id))
-                .ToListAsync(cancellationToken);
-
-            _ctx.Servers.RemoveRange(serversToUpdate);
-
-            _ctx.Servers.AddRange(servers.Values.Select(x => new Data.Models.Server
+            var entities = servers.Values.Select(x => new Data.Models.Server
             {
                 Id = x.Guid,
                 Name = x.Name,
@@ -86,7 +75,22 @@ public static class Fetch
                 Country = x.Country,
                 TickRate = x.TickRate,
                 UpdatedAt = now,
-            }));
+            });
+
+            // Just delete and re-add all entries instead of bothering with change-tracking
+
+            await _ctx.Servers
+                .Where(x => servers.Keys.Contains(x.Id))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _ctx.BulkCopyAsync(entities, cancellationToken);
+
+
+            _ctx.ServerScans.Add(new Data.Models.ServerScan
+            {
+                Timestamp = now,
+                ServerCount = servers.Count,
+            });
 
             await _ctx.SaveChangesAsync(cancellationToken);
         }

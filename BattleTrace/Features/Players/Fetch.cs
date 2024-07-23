@@ -3,6 +3,7 @@ using System.Diagnostics;
 using BattleTrace.Data;
 using BattleTrace.Data.Models;
 using JetBrains.Annotations;
+using LinqToDB.EntityFrameworkCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -42,30 +43,28 @@ public static class Fetch
             var scanAt = DateTimeOffset.UtcNow;
             var minTimestamp = scanAt - _options.MaxServerAge;
 
-            var servers = await _ctx.Servers
+            var serverIds = await _ctx.Servers
                 .Where(x => x.UpdatedAt > minTimestamp)
+                .Select(x => x.Id)
                 .ToListAsync(cancellationToken);
 
-            _logger.LogDebug("Fetching players for {Servers} servers ", servers.Count);
+            _logger.LogDebug("Fetching players for {Servers} servers ", serverIds.Count);
 
             var responses = new ConcurrentBag<(string serverId, DateTimeOffset updatedAt, IKeeperBattlelogApi.SnapshotResponse response)>();
 
-            await Parallel.ForEachAsync(servers, cancellationToken, async (server, ct) =>
+            await Parallel.ForEachAsync(serverIds, cancellationToken, async (serverId, ct) =>
             {
-                var httpResponse = await _api.GetSnapshot(server.Id, ct);
+                var httpResponse = await _api.GetSnapshot(serverId, ct);
                 if (!httpResponse.IsSuccessStatusCode)
                 {
                     _logger.LogDebug(
                         "Failed fetching players for {ServerId}, server returned: {StatusCode} ({ReasonPhrase})",
-                        server.Id, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
+                        serverId, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
 
                     return;
                 }
 
-                var updatedAt = DateTimeOffset.UtcNow;
-
-                server.UpdatedAt = updatedAt;
-                responses.Add((server.Id, updatedAt, httpResponse.Content!));
+                responses.Add((serverId, DateTimeOffset.UtcNow, httpResponse.Content!));
             });
 
             var players = responses.SelectMany(x => x.response.Snapshot.TeamInfo
@@ -100,7 +99,28 @@ public static class Fetch
 
             sw.Stop();
             _logger.LogInformation("Fetched {Players} players from {Servers} servers in {Duration}", players.Count,
-                servers.Count, sw.Elapsed);
+                serverIds.Count, sw.Elapsed);
+
+            await _ctx.Servers
+                .Where(x => serverIds.Contains(x.Id))
+                .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(
+                            x => x.UpdatedAt,
+                            x => scanAt
+                        ),
+                    cancellationToken
+                );
+
+            var playerIds = players.Select(x => x.Id).ToList();
+
+            // Just delete and re-add all entries instead of bothering with change-tracking
+
+            await _ctx.Players
+                .Where(x => playerIds.Contains(x.Id))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _ctx.BulkCopyAsync(players, cancellationToken);
+
 
             _ctx.PlayerScans.Add(new PlayerScan
             {
@@ -108,14 +128,6 @@ public static class Fetch
                 PlayerCount = players.Count,
             });
 
-            var playerIds = players.Select(x => x.Id).ToList();
-            var playersToUpdate = await _ctx.Players
-                .Where(x => playerIds.Contains(x.Id))
-                .ToListAsync(cancellationToken);
-
-            // Just delete and re-add all entries instead of bothering with change-tracking
-            _ctx.Players.RemoveRange(playersToUpdate);
-            _ctx.Players.AddRange(players);
             await _ctx.SaveChangesAsync(cancellationToken);
         }
     }
