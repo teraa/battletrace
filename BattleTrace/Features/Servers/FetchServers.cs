@@ -61,7 +61,19 @@ public class FetchServers
 
         var now = DateTimeOffset.UtcNow;
 
-        var entities = servers.Values.Select(x => new Data.Models.Server
+        _ctx.ServerScans.Add(new Data.Models.ServerScan
+        {
+            Timestamp = now,
+            ServerCount = servers.Count,
+        });
+
+        var serversToUpdate = await _ctx.Servers
+            .Where(x => servers.Keys.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+
+        _ctx.Servers.RemoveRange(serversToUpdate);
+
+        _ctx.Servers.AddRange(servers.Values.Select(x => new Data.Models.Server
         {
             Id = x.Guid,
             Name = x.Name,
@@ -70,26 +82,8 @@ public class FetchServers
             Country = x.Country,
             TickRate = x.TickRate,
             UpdatedAt = now,
-        });
-
-        await using var tsx = await _ctx.Database.BeginTransactionAsync(cancellationToken);
-
-        // Just delete and re-add all entries instead of bothering with change-tracking
-
-        await _ctx.Servers
-            .Where(x => servers.Keys.Contains(x.Id))
-            .ExecuteDeleteAsync(cancellationToken);
-
-        await _ctx.BulkCopyAsync(entities, cancellationToken);
-
-
-        _ctx.ServerScans.Add(new Data.Models.ServerScan
-        {
-            Timestamp = now,
-            ServerCount = servers.Count,
-        });
+        }));
 
         await _ctx.SaveChangesAsync(cancellationToken);
-        await tsx.CommitAsync(cancellationToken);
     }
 }
