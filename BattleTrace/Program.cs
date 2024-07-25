@@ -1,12 +1,10 @@
+using BattleTrace;
 using FluentValidation;
 using Serilog;
 using Teraa.Extensions.AspNetCore;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
-using Hangfire;
-using Hangfire.PostgreSql;
-using Microsoft.Extensions.Options;
 using Teraa.Extensions.Configuration.Vault.Options;
 using Teraa.Extensions.Serilog.Systemd;
 using Teraa.Extensions.Serilog.Seq;
@@ -42,15 +40,7 @@ builder.Services
     .AddHttpContextAccessor()
     .AddPlayerFetcher()
     .AddServerFetcher()
-    .AddHangfire((services, config) =>
-    {
-        config.UsePostgreSqlStorage(options =>
-        {
-            var dbOptions = services.GetRequiredService<IOptions<DbOptions>>().Value;
-            options.UseNpgsqlConnection(dbOptions.ConnectionString);
-        });
-    })
-    .AddHangfireServer();
+    .AddHangfire()
     ;
 
 var app = builder.Build();
@@ -70,10 +60,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHangfireDashboard(options: new DashboardOptions
-{
-    Authorization = [],
-});
+app.MapHangfire();
 
 await app.InitAsync();
 await app.RunAsync();
