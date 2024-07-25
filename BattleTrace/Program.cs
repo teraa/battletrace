@@ -64,3 +64,7 @@ app.MapHangfire();
 
 await app.InitAsync();
 await app.RunAsync();
+
+
+// ReSharper disable once ClassNeverInstantiated.Global
+public partial class Program;
