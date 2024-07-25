@@ -31,16 +31,10 @@ builder.Host
     });
 
 builder.Services
-    .AddControllers(options =>
-    {
-        options.ModelValidatorProviders.Clear();
-    })
+    .AddControllers(options => { options.ModelValidatorProviders.Clear(); })
     .Services
     .AddDb()
-    .AddMediatR(config =>
-    {
-        config.RegisterServicesFromAssemblyContaining<Program>();
-    })
+    .AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<Program>(); })
     .AddRequestValidationBehaviour()
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMemoryCache()
