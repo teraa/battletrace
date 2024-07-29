@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using BattleTrace.Data;
 using JetBrains.Annotations;
-using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +26,7 @@ public class FetchServers
         _options = options.CurrentValue;
     }
 
-    public async Task Handle(CancellationToken cancellationToken)
+    public async Task Handle(CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 

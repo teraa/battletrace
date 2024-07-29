@@ -31,7 +31,7 @@ public class FetchPlayers
         _options = options.CurrentValue;
     }
 
-    public async Task Handle(CancellationToken cancellationToken)
+    public async Task Handle(CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
