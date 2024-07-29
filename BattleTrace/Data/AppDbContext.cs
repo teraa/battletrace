@@ -11,7 +11,8 @@ public partial class AppDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSnakeCaseNamingConvention();
+        optionsBuilder.UseSnakeCaseNamingConvention()
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
