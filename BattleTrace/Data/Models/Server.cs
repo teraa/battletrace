@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BattleTrace.Data.Models
 {
     [PublicAPI]
-    public class Server
+    public record Server
     {
         public string Id { get; set; }
         public string Name { get; set; }

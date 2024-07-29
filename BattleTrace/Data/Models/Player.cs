@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BattleTrace.Data.Models
 {
     [PublicAPI]
-    public class Player
+    public record Player
     {
         public string Id { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
