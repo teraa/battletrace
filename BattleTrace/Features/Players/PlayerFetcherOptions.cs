@@ -70,7 +70,8 @@ public static class ServiceCollectionExtensions
                 var options = sp.GetRequiredService<IOptions<PlayerFetcherOptions>>();
                 return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));
             })
-            .AddAsyncInitializer<PlayerFetcherJobInitializer>();
+            .AddAsyncInitializer<PlayerFetcherJobInitializer>()
+            .AddScoped<FetchPlayers>();
 
         return services;
     }
