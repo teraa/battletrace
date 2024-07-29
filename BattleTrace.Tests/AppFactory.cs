@@ -8,11 +8,22 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Moq;
 using Npgsql;
 using Respawn;
 using Respawn.Graph;
 
 namespace BattleTrace.Tests;
+
+[Collection(AppFactoryFixture.CollectionName)]
+public abstract class AppFactoryTests(AppFactory appFactory) : IAsyncLifetime
+{
+    protected readonly AppFactory _appFactory = appFactory;
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public Task DisposeAsync() => _appFactory.ResetDatabaseAsync();
+}
 
 [CollectionDefinition(CollectionName)]
 public class AppFactoryFixture : ICollectionFixture<AppFactory>
@@ -28,6 +39,9 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private Respawner? _respawner;
 
+    public Mock<IBattlelogApi> BattlelogApiMock { get; } = new();
+    public Mock<IKeeperBattlelogApi> KeeperBattlelogApiMock { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
@@ -40,6 +54,10 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.RemoveService<ServerFetcherJobInitializer>();
             services.RemoveService<BackgroundJobServerHostedService>();
             services.RemoveService<IGlobalConfiguration>();
+            services.RemoveService<IBattlelogApi>();
+            services.AddTransient<IBattlelogApi>(_ => BattlelogApiMock.Object);
+            services.RemoveService<IKeeperBattlelogApi>();
+            services.AddTransient<IKeeperBattlelogApi>(_ => KeeperBattlelogApiMock.Object);
         });
     }
 
