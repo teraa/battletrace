@@ -18,11 +18,9 @@ namespace BattleTrace.Tests;
 [Collection(AppFactoryFixture.CollectionName)]
 public abstract class AppFactoryTests(AppFactory appFactory) : IAsyncLifetime
 {
-    protected readonly AppFactory _appFactory = appFactory;
+    public Task InitializeAsync() => appFactory.InitializeAsync();
 
-    public Task InitializeAsync() => _appFactory.InitializeAsync();
-
-    public Task DisposeAsync() => _appFactory.DisposeAsync();
+    public Task DisposeAsync() => appFactory.DisposeAsync();
 }
 
 [CollectionDefinition(CollectionName)]
