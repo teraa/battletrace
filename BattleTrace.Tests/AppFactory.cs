@@ -20,7 +20,7 @@ public abstract class AppFactoryTests(AppFactory appFactory) : IAsyncLifetime
 {
     protected readonly AppFactory _appFactory = appFactory;
 
-    public Task InitializeAsync() => Task.CompletedTask;
+    public Task InitializeAsync() => _appFactory.InitializeAsync();
 
     public Task DisposeAsync() => _appFactory.ResetDatabaseAsync();
 }
@@ -39,8 +39,8 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private Respawner? _respawner;
 
-    public Mock<IBattlelogApi> BattlelogApiMock { get; } = new();
-    public Mock<IKeeperBattlelogApi> KeeperBattlelogApiMock { get; } = new();
+    public Mock<IBattlelogApi> BattlelogApiMock { get; private set; } = null!;
+    public Mock<IKeeperBattlelogApi> KeeperBattlelogApiMock { get; private set; } = null!;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -90,6 +90,8 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public Task InitializeAsync()
     {
+        BattlelogApiMock = new();
+        KeeperBattlelogApiMock = new();
         return Task.CompletedTask;
     }
 
