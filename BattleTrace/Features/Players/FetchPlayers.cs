@@ -3,7 +3,6 @@ using System.Diagnostics;
 using BattleTrace.Data;
 using BattleTrace.Data.Models;
 using JetBrains.Annotations;
-using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
