@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BattleTrace.Tests;
 
-public static class ServiceCollectionExtensions
+public static class Extensions
 {
     public static IServiceCollection RemoveAll(
         this IServiceCollection services,
@@ -29,4 +29,8 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static T GetRequiredService<T>(this IServiceScope scope)
+        where T : notnull
+        => scope.ServiceProvider.GetRequiredService<T>();
 }
