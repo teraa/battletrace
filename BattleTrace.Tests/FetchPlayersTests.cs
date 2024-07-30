@@ -22,9 +22,6 @@ public class FetchPlayersTests : AppFactoryTests
     [Fact]
     public async Task KeepsPlayers()
     {
-        using var scope = _appFactory.Services.CreateScope();
-        var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
         var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
 
         var server = new Server
@@ -48,28 +45,32 @@ public class FetchPlayersTests : AppFactoryTests
             api: new IKeeperBattlelogApi.Player("", "", 0, 0, 0, 0, 0, 0)
         );
 
-        ctx.Servers.AddRange([
-            server with
-            {
-                Id = "a",
-                Players =
-                [
-                    player.db with {Id = "a1"},
-                    player.db with {Id = "a2"},
-                ],
-            },
-            server with
-            {
-                Id = "b",
-                Players =
-                [
-                    player.db with {Id = "b1"},
-                ],
-            }
-        ]);
+        using (var scope = _appFactory.Services.CreateScope())
+        {
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        await ctx.SaveChangesAsync();
-        ctx.ChangeTracker.Clear();
+            ctx.Servers.AddRange([
+                server with
+                {
+                    Id = "a",
+                    Players =
+                    [
+                        player.db with {Id = "a1"},
+                        player.db with {Id = "a2"},
+                    ],
+                },
+                server with
+                {
+                    Id = "b",
+                    Players =
+                    [
+                        player.db with {Id = "b1"},
+                    ],
+                },
+            ]);
+
+            await ctx.SaveChangesAsync();
+        }
 
         _appFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("a", It.IsAny<CancellationToken>()))
             .ReturnsAsync(
@@ -103,39 +104,47 @@ public class FetchPlayersTests : AppFactoryTests
 
         _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
-        var handler = scope.ServiceProvider.GetRequiredService<FetchPlayers>();
+
+        using (var scope = _appFactory.Services.CreateScope())
+        {
+            var handler = scope.ServiceProvider.GetRequiredService<FetchPlayers>();
+
+            await handler.Handle();
+        }
 
 
-        await handler.Handle();
+        using (var scope = _appFactory.Services.CreateScope())
+        {
+            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+            var servers = await ctx.Servers.ToListAsync();
 
-        var servers = await ctx.Servers.ToListAsync();
+            servers.Should().BeEquivalentTo([
+                server with {Id = "a"},
+                server with {Id = "b"},
+            ]);
 
-        servers.Should().BeEquivalentTo([
-            server with {Id = "a"},
-            server with {Id = "b"},
-        ]);
+            var players = await ctx.Players.ToListAsync();
 
-        var players = await ctx.Players.ToListAsync();
+            players.Should().BeEquivalentTo([
+                player.db with {Id = "a1", ServerId = "a", UpdatedAt = time},
+                player.db with {Id = "a2", ServerId = "a"},
+                player.db with {Id = "a3", ServerId = "a", UpdatedAt = time},
+                player.db with {Id = "b1", ServerId = "b"},
+            ]);
 
-        players.Should().BeEquivalentTo([
-            player.db with {Id = "a1", ServerId = "a", UpdatedAt = time},
-            player.db with {Id = "a2", ServerId = "a"},
-            player.db with {Id = "a3", ServerId = "a", UpdatedAt = time},
-            player.db with {Id = "b1", ServerId = "b"},
-        ]);
+            var playerScans = await ctx.PlayerScans.ToListAsync();
 
-        var playerScans = await ctx.PlayerScans.ToListAsync();
-
-        playerScans.Should().BeEquivalentTo(
-            [
-                new PlayerScan
-                {
-                    PlayerCount = 2,
-                    Timestamp = time,
-                },
-            ],
-            options => options.Excluding(x => x.Id)
-        );
+            playerScans.Should().BeEquivalentTo(
+                [
+                    new PlayerScan
+                    {
+                        PlayerCount = 2,
+                        Timestamp = time,
+                    },
+                ],
+                options => options.Excluding(x => x.Id)
+            );
+        }
     }
 }
