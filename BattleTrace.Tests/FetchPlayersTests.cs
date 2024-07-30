@@ -49,23 +49,14 @@ public class FetchPlayersTests : AppFactoryTests
             var ctx = scope.GetRequiredService<AppDbContext>();
 
             ctx.Servers.AddRange([
-                server with
-                {
-                    Id = "a",
-                    Players =
-                    [
-                        player.db with {Id = "a1"},
-                        player.db with {Id = "a2"},
-                    ],
-                },
-                server with
-                {
-                    Id = "b",
-                    Players =
-                    [
-                        player.db with {Id = "b1"},
-                    ],
-                },
+                server with {Id = "a"},
+                server with {Id = "b"},
+            ]);
+
+            ctx.Players.AddRange([
+                player.db with {Id = "a1", ServerId = "a"},
+                player.db with {Id = "a2", ServerId = "a"},
+                player.db with {Id = "b1", ServerId = "b"},
             ]);
 
             await ctx.SaveChangesAsync();
