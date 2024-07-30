@@ -22,6 +22,8 @@ public abstract class AppFactoryTests(AppFactory appFactory) : IAsyncLifetime
     public Task InitializeAsync() => appFactory.InitializeAsync();
 
     public Task DisposeAsync() => appFactory.DisposeAsync();
+
+    protected IServiceScope CreateScope() => appFactory.Services.CreateScope();
 }
 
 [CollectionDefinition(CollectionName)]

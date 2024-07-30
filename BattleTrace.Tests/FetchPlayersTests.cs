@@ -4,7 +4,6 @@ using BattleTrace.Data.Models;
 using BattleTrace.Features.Players;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Refit;
 
@@ -45,9 +44,9 @@ public class FetchPlayersTests : AppFactoryTests
             api: new IKeeperBattlelogApi.Player("", "", 0, 0, 0, 0, 0, 0)
         );
 
-        using (var scope = _appFactory.Services.CreateScope())
+        using (var scope = CreateScope())
         {
-            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var ctx = scope.GetRequiredService<AppDbContext>();
 
             ctx.Servers.AddRange([
                 server with
@@ -105,17 +104,17 @@ public class FetchPlayersTests : AppFactoryTests
         _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
 
-        using (var scope = _appFactory.Services.CreateScope())
+        using (var scope = CreateScope())
         {
-            var handler = scope.ServiceProvider.GetRequiredService<FetchPlayers>();
+            var handler = scope.GetRequiredService<FetchPlayers>();
 
             await handler.Handle();
         }
 
 
-        using (var scope = _appFactory.Services.CreateScope())
+        using (var scope = CreateScope())
         {
-            var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var ctx = scope.GetRequiredService<AppDbContext>();
 
             var servers = await ctx.Servers.ToListAsync();
 
