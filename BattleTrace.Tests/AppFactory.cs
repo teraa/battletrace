@@ -22,7 +22,7 @@ public abstract class AppFactoryTests(AppFactory appFactory) : IAsyncLifetime
 
     public Task InitializeAsync() => _appFactory.InitializeAsync();
 
-    public Task DisposeAsync() => _appFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => _appFactory.DisposeAsync();
 }
 
 [CollectionDefinition(CollectionName)]
