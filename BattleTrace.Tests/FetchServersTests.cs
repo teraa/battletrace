@@ -51,8 +51,13 @@ public class FetchServersTests : AppFactoryTests
         };
 
         ctx.Servers.AddRange([
-            server.db with {Id = "a", Players = [playerDb with {Id = "1"}]},
-            server.db with {Id = "b", Players = [playerDb with {Id = "2"}]},
+            server.db with {Id = "a"},
+            server.db with {Id = "b"},
+        ]);
+
+        ctx.Players.AddRange([
+            playerDb with {Id = "1", ServerId = "a"},
+            playerDb with {Id = "2", ServerId = "b"},
         ]);
 
         await ctx.SaveChangesAsync();
