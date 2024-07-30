@@ -41,6 +41,7 @@ builder.Services
     .AddPlayerFetcher()
     .AddServerFetcher()
     .AddHangfire()
+    .AddSingleton(TimeProvider.System)
     ;
 
 var app = builder.Build();

@@ -13,16 +13,19 @@ public class FetchServers
     private readonly AppDbContext _ctx;
     private readonly ILogger<FetchServers> _logger;
     private readonly IBattlelogApi _api;
+    private readonly TimeProvider _time;
 
     public FetchServers(
         IOptionsMonitor<ServerFetcherOptions> options,
         AppDbContext ctx,
         ILogger<FetchServers> logger,
-        IBattlelogApi api)
+        IBattlelogApi api,
+        TimeProvider time)
     {
         _ctx = ctx;
         _logger = logger;
         _api = api;
+        _time = time;
         _options = options.CurrentValue;
     }
 
@@ -58,7 +61,7 @@ public class FetchServers
         _logger.LogInformation("Found {Servers} servers in {Requests} requests within {Duration}",
             servers.Count, requestIndex, sw.Elapsed);
 
-        var now = DateTimeOffset.UtcNow;
+        var now = _time.GetUtcNow();
 
         _ctx.ServerScans.Add(new Data.Models.ServerScan
         {

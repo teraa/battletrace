@@ -18,16 +18,19 @@ public class FetchPlayers
     private readonly AppDbContext _ctx;
     private readonly ILogger<FetchPlayers> _logger;
     private readonly IKeeperBattlelogApi _api;
+    private readonly TimeProvider _time;
 
     public FetchPlayers(
         IOptionsMonitor<PlayerFetcherOptions> options,
         AppDbContext ctx,
         ILogger<FetchPlayers> logger,
-        IKeeperBattlelogApi api)
+        IKeeperBattlelogApi api,
+        TimeProvider time)
     {
         _ctx = ctx;
         _logger = logger;
         _api = api;
+        _time = time;
         _options = options.CurrentValue;
     }
 
@@ -35,7 +38,7 @@ public class FetchPlayers
     {
         var sw = Stopwatch.StartNew();
 
-        var scanAt = DateTimeOffset.UtcNow;
+        var scanAt = _time.GetUtcNow();
         var minTimestamp = scanAt - _options.MaxServerAge;
 
         var servers = await _ctx.Servers
@@ -58,7 +61,7 @@ public class FetchPlayers
                 return;
             }
 
-            var updatedAt = DateTimeOffset.UtcNow;
+            var updatedAt = _time.GetUtcNow();
 
             server.UpdatedAt = updatedAt;
             responses.Add((server.Id, updatedAt, httpResponse.Content!));
