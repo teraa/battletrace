@@ -47,7 +47,8 @@ public class FetchPlayers
 
         _logger.LogDebug("Fetching players for {Servers} servers ", servers.Count);
 
-        var responses = new ConcurrentBag<(string serverId, DateTimeOffset updatedAt, IKeeperBattlelogApi.SnapshotResponse response)>();
+        var responses = new ConcurrentBag
+            <(string serverId, DateTimeOffset updatedAt, IKeeperBattlelogApi.SnapshotResponse response)>();
 
         await Parallel.ForEachAsync(servers, cancellationToken, async (server, ct) =>
         {
@@ -112,7 +113,7 @@ public class FetchPlayers
             .Where(x => playerIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
 
-        // Just delete and re-add all entries instead of bothering with change-tracking
+        // Removing and adding here will result in an UPDATE for changed fields for each entity, not a DELETE + INSERT!
         _ctx.Players.RemoveRange(playersToUpdate);
         _ctx.Players.AddRange(players);
         await _ctx.SaveChangesAsync(cancellationToken);
