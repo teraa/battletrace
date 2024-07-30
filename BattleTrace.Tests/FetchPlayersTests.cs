@@ -10,9 +10,15 @@ using Refit;
 
 namespace BattleTrace.Tests;
 
-public class FetchPlayersTests(AppFactory appFactory)
-    : AppFactoryTests(appFactory)
+public class FetchPlayersTests : AppFactoryTests
 {
+    private readonly AppFactory _appFactory;
+
+    public FetchPlayersTests(AppFactory appFactory) : base(appFactory)
+    {
+        _appFactory = appFactory;
+    }
+
     [Fact]
     public async Task KeepsPlayers()
     {

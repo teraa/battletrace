@@ -8,9 +8,15 @@ using Moq;
 
 namespace BattleTrace.Tests;
 
-public class FetchServersTests(AppFactory appFactory)
-    : AppFactoryTests(appFactory)
+public class FetchServersTests : AppFactoryTests
 {
+    private readonly AppFactory _appFactory;
+
+    public FetchServersTests(AppFactory appFactory) : base(appFactory)
+    {
+        _appFactory = appFactory;
+    }
+
     [Fact]
     public async Task KeepsPlayers()
     {
