@@ -97,5 +97,18 @@ public class FetchServersTests : AppFactoryTests
             playerDb with {Id = "1", ServerId = "a"},
             playerDb with {Id = "2", ServerId = "b"},
         ]);
+
+        var serverScans = await ctx.ServerScans.ToListAsync();
+
+        serverScans.Should().BeEquivalentTo(
+            [
+                new ServerScan
+                {
+                    ServerCount = 2,
+                    Timestamp = time,
+                },
+            ],
+            options => options.Excluding(x => x.Id)
+        );
     }
 }

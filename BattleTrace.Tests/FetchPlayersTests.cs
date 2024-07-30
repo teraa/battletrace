@@ -124,5 +124,18 @@ public class FetchPlayersTests : AppFactoryTests
             player.db with {Id = "a3", ServerId = "a", UpdatedAt = time},
             player.db with {Id = "b1", ServerId = "b"},
         ]);
+
+        var playerScans = await ctx.PlayerScans.ToListAsync();
+
+        playerScans.Should().BeEquivalentTo(
+            [
+                new PlayerScan
+                {
+                    PlayerCount = 2,
+                    Timestamp = time,
+                },
+            ],
+            options => options.Excluding(x => x.Id)
+        );
     }
 }
