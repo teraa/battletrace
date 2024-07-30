@@ -65,14 +65,17 @@ public class FetchServersTests : AppFactoryTests
 
         _appFactory.BattlelogApiMock.Setup(x => x.GetServers(0, It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new IBattlelogApi.ServersResponse([
-                    server.api with {Guid = "b", Port = 2},
-                    server.api with {Guid = "c", Port = 2},
+                    server.api with {Guid = "b"},
+                    server.api with {Guid = "c"},
                 ])
             );
 
         _appFactory.BattlelogApiMock
             .Setup(x => x.GetServers(It.IsNotIn(0), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new IBattlelogApi.ServersResponse([]));
+
+        var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
+        _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
         var handler = scope.ServiceProvider.GetRequiredService<FetchServers>();
 
@@ -82,15 +85,10 @@ public class FetchServersTests : AppFactoryTests
 
         var servers = await ctx.Servers.ToListAsync();
 
-        foreach (var s in servers)
-        {
-            s.UpdatedAt = default;
-        }
-
         servers.Should().BeEquivalentTo([
             server.db with {Id = "a"},
-            server.db with {Id = "b", Port = 2},
-            server.db with {Id = "c", Port = 2},
+            server.db with {Id = "b", UpdatedAt = time},
+            server.db with {Id = "c", UpdatedAt = time},
         ]);
 
         var players = await ctx.Players.ToListAsync();

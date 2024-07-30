@@ -25,12 +25,14 @@ public class FetchPlayersTests : AppFactoryTests
         using var scope = _appFactory.Services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+        var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
+
         var server = new Server
         {
             Name = "",
             IpAddress = "",
             Country = "",
-            UpdatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = time - TimeSpan.FromHours(1),
         };
 
         var player = (
@@ -40,7 +42,8 @@ public class FetchPlayersTests : AppFactoryTests
                 Name = "",
                 NormalizedName = "",
                 Tag = "",
-                // ServerId =
+                // ServerId =,
+                UpdatedAt = time - TimeSpan.FromMinutes(10),
             },
             api: new IKeeperBattlelogApi.Player("", "", 0, 0, 0, 0, 0, 0)
         );
@@ -98,6 +101,8 @@ public class FetchPlayersTests : AppFactoryTests
                 )
             );
 
+        _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
+
         var handler = scope.ServiceProvider.GetRequiredService<FetchPlayers>();
 
 
@@ -106,28 +111,18 @@ public class FetchPlayersTests : AppFactoryTests
 
         var servers = await ctx.Servers.ToListAsync();
 
-        foreach (var s in servers)
-        {
-            s.UpdatedAt = default;
-        }
-
         servers.Should().BeEquivalentTo([
-            server with {Id = "a", UpdatedAt = default},
-            server with {Id = "b", UpdatedAt = default},
+            server with {Id = "a"},
+            server with {Id = "b"},
         ]);
 
         var players = await ctx.Players.ToListAsync();
 
-        foreach (var p in players)
-        {
-            p.UpdatedAt = default;
-        }
-
         players.Should().BeEquivalentTo([
-            player.db with {Id = "a1", ServerId = "a", UpdatedAt = default},
-            player.db with {Id = "a2", ServerId = "a", UpdatedAt = default},
-            player.db with {Id = "a3", ServerId = "a", UpdatedAt = default},
-            player.db with {Id = "b1", ServerId = "b", UpdatedAt = default},
+            player.db with {Id = "a1", ServerId = "a", UpdatedAt = time},
+            player.db with {Id = "a2", ServerId = "a"},
+            player.db with {Id = "a3", ServerId = "a", UpdatedAt = time},
+            player.db with {Id = "b1", ServerId = "b"},
         ]);
     }
 }

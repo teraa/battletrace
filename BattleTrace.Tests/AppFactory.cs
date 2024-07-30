@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Npgsql;
@@ -37,6 +38,7 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private Respawner? _respawner;
 
+    public Mock<TimeProvider> TimeProviderMock { get; private set; } = null!;
     public Mock<IBattlelogApi> BattlelogApiMock { get; private set; } = null!;
     public Mock<IKeeperBattlelogApi> KeeperBattlelogApiMock { get; private set; } = null!;
 
@@ -48,6 +50,8 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.ConfigureTestServices(services =>
         {
+            services.RemoveAll<TimeProvider>();
+            services.AddTransient<TimeProvider>(_ => TimeProviderMock.Object);
             services.RemoveService<PlayerFetcherJobInitializer>();
             services.RemoveService<ServerFetcherJobInitializer>();
             services.RemoveService<BackgroundJobServerHostedService>();
@@ -88,6 +92,7 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public Task InitializeAsync()
     {
+        TimeProviderMock = new();
         BattlelogApiMock = new();
         KeeperBattlelogApiMock = new();
         return Task.CompletedTask;
