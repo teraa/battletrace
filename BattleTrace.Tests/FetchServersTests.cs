@@ -51,24 +51,31 @@ public class FetchServersTests : AppFactoryTests
         {
             var ctx = scope.GetRequiredService<AppDbContext>();
 
-            ctx.Servers.AddRange([
-                server.db with {Id = "a"},
-                server.db with {Id = "b"},
-            ]);
+            ctx.Servers.AddRange(
+                [
+                    server.db with {Id = "a"},
+                    server.db with {Id = "b"},
+                ]
+            );
 
-            ctx.Players.AddRange([
-                playerDb with {Id = "1", ServerId = "a"},
-                playerDb with {Id = "2", ServerId = "b"},
-            ]);
+            ctx.Players.AddRange(
+                [
+                    playerDb with {Id = "1", ServerId = "a"},
+                    playerDb with {Id = "2", ServerId = "b"},
+                ]
+            );
 
             await ctx.SaveChangesAsync();
         }
 
         _appFactory.BattlelogApiMock.Setup(x => x.GetServers(0, It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new IBattlelogApi.ServersResponse([
-                    server.api with {Guid = "b"},
-                    server.api with {Guid = "c"},
-                ])
+            .ReturnsAsync(
+                new IBattlelogApi.ServersResponse(
+                    [
+                        server.api with {Guid = "b"},
+                        server.api with {Guid = "c"},
+                    ]
+                )
             );
 
         _appFactory.BattlelogApiMock
@@ -93,18 +100,22 @@ public class FetchServersTests : AppFactoryTests
 
             var servers = await ctx.Servers.ToListAsync();
 
-            servers.Should().BeEquivalentTo([
-                server.db with {Id = "a"},
-                server.db with {Id = "b", UpdatedAt = time},
-                server.db with {Id = "c", UpdatedAt = time},
-            ]);
+            servers.Should().BeEquivalentTo(
+                [
+                    server.db with {Id = "a"},
+                    server.db with {Id = "b", UpdatedAt = time},
+                    server.db with {Id = "c", UpdatedAt = time},
+                ]
+            );
 
             var players = await ctx.Players.ToListAsync();
 
-            players.Should().BeEquivalentTo([
-                playerDb with {Id = "1", ServerId = "a"},
-                playerDb with {Id = "2", ServerId = "b"},
-            ]);
+            players.Should().BeEquivalentTo(
+                [
+                    playerDb with {Id = "1", ServerId = "a"},
+                    playerDb with {Id = "2", ServerId = "b"},
+                ]
+            );
 
             var serverScans = await ctx.ServerScans.ToListAsync();
 

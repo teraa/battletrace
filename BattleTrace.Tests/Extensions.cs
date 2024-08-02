@@ -20,12 +20,15 @@ public static class Extensions
 
     public static IServiceCollection RemoveService<TService>(this IServiceCollection services)
     {
-        services.RemoveAll(x =>
-            x.ServiceType == typeof(TService) ||
-            !x.IsKeyedService &&
-            (x.ImplementationType == typeof(TService) ||
-             (x.ImplementationFactory is not null &&
-              x.ImplementationFactory.Method.ReturnType == typeof(TService))));
+        services.RemoveAll(
+            x =>
+                x.ServiceType == typeof(TService) ||
+                !x.IsKeyedService &&
+                (x.ImplementationType == typeof(TService) ||
+                 (x.ImplementationFactory is not null &&
+                  x.ImplementationFactory.Method.ReturnType ==
+                  typeof(TService)))
+        );
 
         return services;
     }

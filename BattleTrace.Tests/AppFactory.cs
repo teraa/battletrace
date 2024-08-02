@@ -51,18 +51,19 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseEnvironment("Test");
 
         builder.ConfigureTestServices(services =>
-        {
-            services.RemoveAll<TimeProvider>();
-            services.AddTransient<TimeProvider>(_ => TimeProviderMock.Object);
-            services.RemoveService<PlayerFetcherJobInitializer>();
-            services.RemoveService<ServerFetcherJobInitializer>();
-            services.RemoveService<BackgroundJobServerHostedService>();
-            services.RemoveService<IGlobalConfiguration>();
-            services.RemoveService<IBattlelogApi>();
-            services.AddTransient<IBattlelogApi>(_ => BattlelogApiMock.Object);
-            services.RemoveService<IKeeperBattlelogApi>();
-            services.AddTransient<IKeeperBattlelogApi>(_ => KeeperBattlelogApiMock.Object);
-        });
+            {
+                services.RemoveAll<TimeProvider>();
+                services.AddTransient<TimeProvider>(_ => TimeProviderMock.Object);
+                services.RemoveService<PlayerFetcherJobInitializer>();
+                services.RemoveService<ServerFetcherJobInitializer>();
+                services.RemoveService<BackgroundJobServerHostedService>();
+                services.RemoveService<IGlobalConfiguration>();
+                services.RemoveService<IBattlelogApi>();
+                services.AddTransient<IBattlelogApi>(_ => BattlelogApiMock.Object);
+                services.RemoveService<IKeeperBattlelogApi>();
+                services.AddTransient<IKeeperBattlelogApi>(_ => KeeperBattlelogApiMock.Object);
+            }
+        );
     }
 
     public async Task ResetDatabaseAsync(CancellationToken cancellationToken = default)

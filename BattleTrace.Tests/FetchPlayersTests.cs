@@ -34,30 +34,43 @@ public class FetchPlayersTests : AppFactoryTests
         var player = (
             db: new Player
             {
-                // Id =
+                Id = "",
                 Name = "",
                 NormalizedName = "",
                 Tag = "",
-                // ServerId =,
+                ServerId = "",
                 UpdatedAt = time - TimeSpan.FromMinutes(10),
             },
-            api: new IKeeperBattlelogApi.Player("", "", 0, 0, 0, 0, 0, 0)
+            api: new IKeeperBattlelogApi.Player(
+                Name: "",
+                Tag: "",
+                Rank: 0,
+                Score: 0,
+                Kills: 0,
+                Deaths: 0,
+                Squad: 0,
+                Role: 0
+            )
         );
 
         using (var scope = CreateScope())
         {
             var ctx = scope.GetRequiredService<AppDbContext>();
 
-            ctx.Servers.AddRange([
-                server with {Id = "a"},
-                server with {Id = "b"},
-            ]);
+            ctx.Servers.AddRange(
+                [
+                    server with {Id = "a"},
+                    server with {Id = "b"},
+                ]
+            );
 
-            ctx.Players.AddRange([
-                player.db with {Id = "a1", ServerId = "a"},
-                player.db with {Id = "a2", ServerId = "a"},
-                player.db with {Id = "b1", ServerId = "b"},
-            ]);
+            ctx.Players.AddRange(
+                [
+                    player.db with {Id = "a1", ServerId = "a"},
+                    player.db with {Id = "a2", ServerId = "a"},
+                    player.db with {Id = "b1", ServerId = "b"},
+                ]
+            );
 
             await ctx.SaveChangesAsync();
         }
@@ -65,8 +78,8 @@ public class FetchPlayersTests : AppFactoryTests
         _appFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("a", It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ApiResponse<IKeeperBattlelogApi.SnapshotResponse>(
-                    new HttpResponseMessage(HttpStatusCode.OK),
-                    new IKeeperBattlelogApi.SnapshotResponse(
+                    response: new HttpResponseMessage(HttpStatusCode.OK),
+                    content: new IKeeperBattlelogApi.SnapshotResponse(
                         new IKeeperBattlelogApi.Snapshot(
                             new Dictionary<string, IKeeperBattlelogApi.TeamInfo>
                             {
@@ -78,17 +91,19 @@ public class FetchPlayersTests : AppFactoryTests
                                         ["a3"] = player.api with { },
                                     }
                                 ),
-                            })),
-                    null!
+                            }
+                        )
+                    ),
+                    settings: null!
                 )
             );
 
         _appFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("b", It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ApiResponse<IKeeperBattlelogApi.SnapshotResponse>(
-                    new HttpResponseMessage(HttpStatusCode.NotFound),
-                    null,
-                    null!
+                    response: new HttpResponseMessage(HttpStatusCode.NotFound),
+                    content: null,
+                    settings: null!
                 )
             );
 
@@ -109,19 +124,23 @@ public class FetchPlayersTests : AppFactoryTests
 
             var servers = await ctx.Servers.ToListAsync();
 
-            servers.Should().BeEquivalentTo([
-                server with {Id = "a"},
-                server with {Id = "b"},
-            ]);
+            servers.Should().BeEquivalentTo(
+                [
+                    server with {Id = "a"},
+                    server with {Id = "b"},
+                ]
+            );
 
             var players = await ctx.Players.ToListAsync();
 
-            players.Should().BeEquivalentTo([
-                player.db with {Id = "a1", ServerId = "a", UpdatedAt = time},
-                player.db with {Id = "a2", ServerId = "a"},
-                player.db with {Id = "a3", ServerId = "a", UpdatedAt = time},
-                player.db with {Id = "b1", ServerId = "b"},
-            ]);
+            players.Should().BeEquivalentTo(
+                [
+                    player.db with {Id = "a1", ServerId = "a", UpdatedAt = time},
+                    player.db with {Id = "a2", ServerId = "a"},
+                    player.db with {Id = "a3", ServerId = "a", UpdatedAt = time},
+                    player.db with {Id = "b1", ServerId = "b"},
+                ]
+            );
 
             var playerScans = await ctx.PlayerScans.ToListAsync();
 
