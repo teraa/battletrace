@@ -7,7 +7,7 @@ using IndexServers = BattleTrace.Features.Servers.Actions.Index;
 
 namespace BattleTrace.Tests;
 
-public class ValidationTests(AppFactory appFactory)
+public class RequestValidationTests(AppFactory appFactory)
     : AppFactoryTests(appFactory)
 {
     [Fact]
