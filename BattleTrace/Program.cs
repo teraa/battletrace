@@ -17,19 +17,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddVault();
 
 builder.Host
-    .UseDefaultServiceProvider(options =>
-    {
-        options.ValidateOnBuild = true;
-        options.ValidateScopes = true;
-    })
+    .UseDefaultServiceProvider(
+        options =>
+        {
+            options.ValidateOnBuild = true;
+            options.ValidateScopes = true;
+        }
+    )
     .UseSystemd()
-    .UseSerilog((hostContext, options) =>
-    {
-        options
-            .ReadFrom.Configuration(hostContext.Configuration)
-            .ConfigureSystemdConsole()
-            .ConfigureSeq(hostContext);
-    });
+    .UseSerilog(
+        (hostContext, options) =>
+        {
+            options
+                .ReadFrom.Configuration(hostContext.Configuration)
+                .ConfigureSystemdConsole()
+                .ConfigureSeq(hostContext);
+        }
+    );
 
 builder.Services
     .AddAuthentication()
@@ -37,7 +41,12 @@ builder.Services
     .AddAuthorization()
     .AddCors()
     .AddDb()
-    .AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<Program>(); })
+    .AddMediatR(
+        config =>
+        {
+            config.RegisterServicesFromAssemblyContaining<Program>();
+        }
+    )
     .AddRequestValidationBehaviour()
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMemoryCache()
@@ -53,12 +62,14 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors(policy =>
-    {
-        policy.AllowAnyOrigin();
-        policy.AllowAnyHeader();
-        policy.AllowAnyMethod();
-    });
+    app.UseCors(
+        policy =>
+        {
+            policy.AllowAnyOrigin();
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+        }
+    );
 }
 
 app.UseAuthentication();
