@@ -75,18 +75,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet(
-    "/players",
-    async ([AsParameters] IndexPlayers.Query query, ISender sender, CancellationToken cancellationToken)
-        => await sender.Send(query, cancellationToken)
-);
-
-app.MapGet(
-    "/servers",
-    async ([AsParameters] IndexServers.Query query, ISender sender, CancellationToken cancellationToken)
-        => await sender.Send(query, cancellationToken)
-);
-
+app.MapPlayers();
+app.MapServers();
 app.MapHangfire();
 
 await app.InitAsync();

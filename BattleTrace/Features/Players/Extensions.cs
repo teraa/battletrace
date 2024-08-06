@@ -1,16 +1,31 @@
 ﻿using System.Threading.RateLimiting;
 using BattleTrace.Common;
+using MediatR;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Refit;
 using Teraa.Extensions.AspNetCore;
 using Teraa.Extensions.Configuration;
+using Index = BattleTrace.Features.Players.Actions.Index;
 
 namespace BattleTrace.Features.Players;
 
 public static class Extensions
 {
+    public static RouteGroupBuilder MapPlayers(this IEndpointRouteBuilder endpoints)
+    {
+        var group = endpoints.MapGroup("/players");
+
+        group.MapGet(
+            "",
+            async ([AsParameters] Index.Query query, ISender sender, CancellationToken cancellationToken)
+                => await sender.Send(query, cancellationToken)
+        );
+
+        return group;
+    }
+
     public static IServiceCollection AddPlayerFetcher(this IServiceCollection services)
     {
         string name = nameof(IKeeperBattlelogApi);
