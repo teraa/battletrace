@@ -2,7 +2,6 @@
 
 namespace BattleTrace.Data;
 
-#pragma warning disable CS8618
 public partial class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)

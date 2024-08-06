@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 
 namespace BattleTrace.Features.Servers;
 
-#pragma warning disable CS8618
 public class ServerFetcherOptions
 {
     public string Cron { get; init; } = "0 */12 * * *";

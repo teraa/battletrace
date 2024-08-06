@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 
 namespace BattleTrace.Features.Players;
 
-#pragma warning disable CS8618
 public class PlayerFetcherOptions
 {
     public string Cron { get; init; } = "*/5 * * * *";

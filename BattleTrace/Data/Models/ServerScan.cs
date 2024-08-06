@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-#pragma warning disable CS8618
 namespace BattleTrace.Data.Models
 {
     [PublicAPI]
