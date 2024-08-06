@@ -5,9 +5,12 @@ using Teraa.Extensions.AspNetCore;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
+using MediatR;
 using Teraa.Extensions.Configuration.Vault.Options;
 using Teraa.Extensions.Serilog.Systemd;
 using Teraa.Extensions.Serilog.Seq;
+using IndexPlayers = BattleTrace.Features.Servers.Actions.Index;
+using IndexServers = BattleTrace.Features.Servers.Actions.Index;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +36,7 @@ builder.Services
     .Services
     .AddDb()
     .AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<Program>(); })
-    .AddRequestValidationBehaviour()
+    .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour2<,>))
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMemoryCache()
     .AddHttpClient()
@@ -60,6 +63,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet(
+    "/players",
+    async ([AsParameters] IndexPlayers.Query query, ISender sender, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken)
+);
+
+app.MapGet(
+    "/servers",
+    async ([AsParameters] IndexServers.Query query, ISender sender, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken)
+);
 
 app.MapHangfire();
 

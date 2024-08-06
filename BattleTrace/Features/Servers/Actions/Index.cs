@@ -15,7 +15,7 @@ public static class Index
         Guid? Id,
         [ModelBinder(Name = "ip")] string? IpAddress,
         int? Limit = null
-    ) : IRequest<IActionResult>;
+    ) : IRequest<IResult>;
 
     [UsedImplicitly]
     public class QueryValidator : AbstractValidator<Query>
@@ -36,7 +36,7 @@ public static class Index
         int Players);
 
     [UsedImplicitly]
-    public class Handler : IRequestHandler<Query, IActionResult>
+    public class Handler : IRequestHandler<Query, IResult>
     {
         private readonly AppDbContext _ctx;
 
@@ -45,7 +45,7 @@ public static class Index
             _ctx = ctx;
         }
 
-        public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = _ctx.Servers.AsQueryable();
 
@@ -91,7 +91,7 @@ public static class Index
                 .Select(x => new Result(x.Id, x.Name, x.IpAddress, x.Port, x.UpdatedAt, x.Players))
                 .ToListAsync(cancellationToken);
 
-            return new OkObjectResult(results);
+            return Results.Ok(results);
         }
     }
 }

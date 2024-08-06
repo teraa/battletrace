@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using IndexPlayers = BattleTrace.Features.Players.Actions.Index;
 using IndexServers = BattleTrace.Features.Servers.Actions.Index;
@@ -18,8 +19,8 @@ public class ValidationTests(AppFactory appFactory)
 
         var response = await sender.Send(request);
 
-        response.Should().BeOfType<BadRequestObjectResult>()
-            .Subject.Value.Should().BeOfType<ValidationProblemDetails>();
+        response.Should().BeOfType<BadRequest<ValidationProblemDetails>>()
+            .Subject.Value!.Errors.Keys.Should().BeEquivalentTo(["Limit"]);
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class ValidationTests(AppFactory appFactory)
 
         var response = await sender.Send(request);
 
-        response.Should().BeOfType<BadRequestObjectResult>()
-            .Subject.Value.Should().BeOfType<ValidationProblemDetails>();
+        response.Should().BeOfType<BadRequest<ValidationProblemDetails>>()
+            .Subject.Value!.Errors.Keys.Should().BeEquivalentTo(["Limit"]);
     }
 }

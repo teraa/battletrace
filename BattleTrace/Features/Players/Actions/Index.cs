@@ -11,12 +11,12 @@ namespace BattleTrace.Features.Players.Actions;
 public static class Index
 {
     public record Query(
-        [ModelBinder(Name = "id")] IReadOnlyList<string>? Ids,
+        [ModelBinder(Name = "id")] string?[] Ids,
         string? NamePattern,
         string? TagPattern,
         [ModelBinder(Name = "active")] bool ActiveOnly = false,
         int? Limit = null
-    ) : IRequest<IActionResult>;
+    ) : IRequest<IResult>;
 
     [UsedImplicitly]
     public class QueryValidator : AbstractValidator<Query>
@@ -45,7 +45,7 @@ public static class Index
         int Role);
 
     [UsedImplicitly]
-    public class Handler : IRequestHandler<Query, IActionResult>
+    public class Handler : IRequestHandler<Query, IResult>
     {
         private readonly AppDbContext _ctx;
 
@@ -54,11 +54,11 @@ public static class Index
             _ctx = ctx;
         }
 
-        public async Task<IActionResult> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(Query request, CancellationToken cancellationToken)
         {
             var query = _ctx.Players.AsQueryable();
 
-            if (request.Ids is {Count: > 0})
+            if (request.Ids is {Length: > 0})
                 query = query.Where(x => request.Ids.Contains(x.Id));
 
             if (request.NamePattern is {Length: > 0})
@@ -83,7 +83,7 @@ public static class Index
                     .FirstOrDefaultAsync(cancellationToken);
 
                 if (lastScan == default)
-                    return new OkObjectResult(Array.Empty<Result>());
+                    return Results.Ok(Array.Empty<Result>());
 
                 query = query.Where(x => x.UpdatedAt >= lastScan);
             }
@@ -111,7 +111,7 @@ public static class Index
                     x.Role))
                 .ToListAsync(cancellationToken);
 
-            return new OkObjectResult(results);
+            return Results.Ok(results);
         }
     }
 }
