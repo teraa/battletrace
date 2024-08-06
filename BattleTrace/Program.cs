@@ -32,8 +32,10 @@ builder.Host
     });
 
 builder.Services
-    .AddControllers(options => { options.ModelValidatorProviders.Clear(); })
+    .AddAuthentication()
     .Services
+    .AddAuthorization()
+    .AddCors()
     .AddDb()
     .AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<Program>(); })
     .AddRequestValidationBehaviour()
@@ -61,8 +63,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.MapGet(
     "/players",
