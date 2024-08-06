@@ -36,7 +36,7 @@ builder.Services
     .Services
     .AddDb()
     .AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<Program>(); })
-    .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour2<,>))
+    .AddRequestValidationBehaviour()
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMemoryCache()
     .AddHttpClient()
