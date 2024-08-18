@@ -2,6 +2,7 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.Extensions.Options;
+using Teraa.Extensions.Configuration;
 
 namespace BattleTrace;
 
@@ -18,7 +19,9 @@ public static class HangfireExtensions
                     options.UseNpgsqlConnection(dbOptions.ConnectionString);
                 });
             })
-            .AddHangfireServer();
+            .AddHangfireServer()
+            .AddValidatedOptions<HangfireOptions>()
+            .AddAsyncInitializer<HangfireJobInitializer>();
     }
 
     public static IEndpointConventionBuilder MapHangfire(this WebApplication app)

@@ -53,7 +53,6 @@ public static class Extensions
                 var options = sp.GetRequiredService<IOptions<PlayerFetcherOptions>>();
                 return new RateLimitingHandler(new TokenBucketRateLimiter(options.Value.RateLimiterOptions));
             })
-            .AddAsyncInitializer<PlayerFetcherJobInitializer>()
             .AddScoped<FetchPlayers>();
 
         return services;

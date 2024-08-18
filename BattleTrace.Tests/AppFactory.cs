@@ -54,8 +54,7 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
             {
                 services.RemoveAll<TimeProvider>();
                 services.AddTransient<TimeProvider>(_ => TimeProviderMock.Object);
-                services.RemoveService<PlayerFetcherJobInitializer>();
-                services.RemoveService<ServerFetcherJobInitializer>();
+                services.RemoveService<HangfireJobInitializer>();
                 services.RemoveService<BackgroundJobServerHostedService>();
                 services.RemoveService<IGlobalConfiguration>();
                 services.RemoveService<IBattlelogApi>();

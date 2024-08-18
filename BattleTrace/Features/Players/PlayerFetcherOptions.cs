@@ -9,7 +9,6 @@ namespace BattleTrace.Features.Players;
 
 public class PlayerFetcherOptions
 {
-    public string Cron { get; init; } = "*/5 * * * *";
     public TimeSpan MaxServerAge { get; init; } = TimeSpan.FromDays(2);
 
     public TokenBucketRateLimiterOptions RateLimiterOptions { get; init; } = new()
@@ -25,7 +24,6 @@ public class PlayerFetcherOptions
     {
         public Validator()
         {
-            RuleFor(x => x.Cron).ValidCronExpression();
             RuleFor(x => x.MaxServerAge).GreaterThan(TimeSpan.Zero);
             RuleFor(x => x.RateLimiterOptions)
                 .NotNull()

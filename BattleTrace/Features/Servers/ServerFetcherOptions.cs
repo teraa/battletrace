@@ -9,7 +9,6 @@ namespace BattleTrace.Features.Servers;
 
 public class ServerFetcherOptions
 {
-    public string Cron { get; init; } = "0 */12 * * *";
     public int Offset { get; init; } = 45;
     public int Threshold { get; init; } = 10;
 
@@ -26,7 +25,6 @@ public class ServerFetcherOptions
     {
         public Validator()
         {
-            RuleFor(x => x.Cron).ValidCronExpression();
             RuleFor(x => x.Offset).GreaterThan(0);
             RuleFor(x => x.Threshold).GreaterThanOrEqualTo(0);
             RuleFor(x => x.RateLimiterOptions)
