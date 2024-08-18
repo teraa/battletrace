@@ -1,7 +1,7 @@
 ﻿using BattleTrace.Common;
 using FluentValidation;
 
-namespace BattleTrace;
+namespace BattleTrace.Hangfire;
 
 public sealed class HangfireOptions
 {

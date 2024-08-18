@@ -5,6 +5,7 @@ using Teraa.Extensions.AspNetCore;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
+using BattleTrace.Hangfire;
 using MediatR;
 using Teraa.Extensions.Configuration.Vault.Options;
 using Teraa.Extensions.Serilog.Systemd;

@@ -2,6 +2,7 @@
 using BattleTrace.Data;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
+using BattleTrace.Hangfire;
 using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

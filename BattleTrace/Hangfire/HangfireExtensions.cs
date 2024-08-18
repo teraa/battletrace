@@ -4,7 +4,7 @@ using Hangfire.PostgreSql;
 using Microsoft.Extensions.Options;
 using Teraa.Extensions.Configuration;
 
-namespace BattleTrace;
+namespace BattleTrace.Hangfire;
 
 public static class HangfireExtensions
 {

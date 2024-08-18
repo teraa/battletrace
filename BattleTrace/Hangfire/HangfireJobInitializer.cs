@@ -4,7 +4,7 @@ using Extensions.Hosting.AsyncInitialization;
 using Hangfire;
 using Microsoft.Extensions.Options;
 
-namespace BattleTrace;
+namespace BattleTrace.Hangfire;
 
 public sealed class HangfireJobInitializer : IAsyncInitializer
 {
