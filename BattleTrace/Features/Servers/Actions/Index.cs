@@ -13,7 +13,7 @@ public static class Index
     public record Query(
         string? NamePattern,
         Guid? Id,
-        [ModelBinder(Name = "ip")] string? IpAddress,
+        [FromQuery(Name = "ip")] string? IpAddress,
         int? Limit = null
     ) : IRequest<IResult>;
 

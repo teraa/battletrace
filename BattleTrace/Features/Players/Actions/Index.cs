@@ -11,10 +11,10 @@ namespace BattleTrace.Features.Players.Actions;
 public static class Index
 {
     public record Query(
-        [ModelBinder(Name = "id")] string?[] Ids,
+        [FromQuery(Name = "id")] string?[] Ids,
         string? NamePattern,
         string? TagPattern,
-        [ModelBinder(Name = "active")] bool ActiveOnly = false,
+        [FromQuery(Name = "active")] bool ActiveOnly = false,
         int? Limit = null
     ) : IRequest<IResult>;
 
