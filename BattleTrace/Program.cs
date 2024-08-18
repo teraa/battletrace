@@ -1,4 +1,3 @@
-using BattleTrace;
 using FluentValidation;
 using Serilog;
 using Teraa.Extensions.AspNetCore;
@@ -6,12 +5,9 @@ using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
 using BattleTrace.Hangfire;
-using MediatR;
 using Teraa.Extensions.Configuration.Vault.Options;
 using Teraa.Extensions.Serilog.Systemd;
 using Teraa.Extensions.Serilog.Seq;
-using IndexPlayers = BattleTrace.Features.Servers.Actions.Index;
-using IndexServers = BattleTrace.Features.Servers.Actions.Index;
 
 var builder = WebApplication.CreateBuilder(args);
 

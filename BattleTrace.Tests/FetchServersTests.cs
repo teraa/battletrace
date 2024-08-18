@@ -3,7 +3,6 @@ using BattleTrace.Data.Models;
 using BattleTrace.Features.Servers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace BattleTrace.Tests;
