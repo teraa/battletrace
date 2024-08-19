@@ -53,11 +53,10 @@ public class IndexTests : AppFactoryTests
     [Fact]
     public async Task MapsResultCorrectly()
     {
-        var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
         var player = new Player
         {
             Id = "id",
-            UpdatedAt = time,
+            UpdatedAt = DateTimeOffset.Parse("2000-01-01T00:00Z"),
             Faction = 1,
             Team = 2,
             Name = "name",
