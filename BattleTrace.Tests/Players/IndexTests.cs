@@ -53,6 +53,7 @@ public class IndexTests : AppFactoryTests
     [Fact]
     public async Task MapsResultCorrectly()
     {
+        // Arrange
         var player = new Player
         {
             Id = "id",
@@ -75,7 +76,6 @@ public class IndexTests : AppFactoryTests
             },
         };
 
-
         using (var scope = CreateScope())
         {
             var ctx = scope.GetRequiredService<AppDbContext>();
@@ -88,6 +88,8 @@ public class IndexTests : AppFactoryTests
         var query = new Index.Query();
         IResult result;
 
+
+        // Act
         using (var scope = CreateScope())
         {
             var sender = scope.GetRequiredService<ISender>();
@@ -95,6 +97,8 @@ public class IndexTests : AppFactoryTests
             result = await sender.Send(query);
         }
 
+
+        // Assert
         result.Should().BeOfType<Ok<List<Index.Result>>>()
             .Subject.Value.Should().Equal(
                 [
@@ -121,6 +125,7 @@ public class IndexTests : AppFactoryTests
     [Fact]
     public async Task DefaultQuery_ReturnsAllPlayers()
     {
+        // Arrange
         using (var scope = CreateScope())
         {
             var ctx = scope.GetRequiredService<AppDbContext>();
@@ -145,6 +150,8 @@ public class IndexTests : AppFactoryTests
         var query = new Index.Query();
         IResult result;
 
+
+        // Act
         using (var scope = CreateScope())
         {
             var sender = scope.GetRequiredService<ISender>();
@@ -152,6 +159,8 @@ public class IndexTests : AppFactoryTests
             result = await sender.Send(query);
         }
 
+
+        // Assert
         result.Should().BeOfType<Ok<List<Index.Result>>>()
             .Subject.Value.Should().Equal(
                 [

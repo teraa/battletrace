@@ -21,6 +21,7 @@ public class FetchPlayersTests : AppFactoryTests
     [Fact]
     public async Task KeepsPlayers()
     {
+        // Arrange
         var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
 
         var server = new Server
@@ -110,6 +111,7 @@ public class FetchPlayersTests : AppFactoryTests
         _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
 
+        // Act
         using (var scope = CreateScope())
         {
             var handler = scope.GetRequiredService<FetchPlayers>();
@@ -118,6 +120,7 @@ public class FetchPlayersTests : AppFactoryTests
         }
 
 
+        // Assert
         using (var scope = CreateScope())
         {
             var ctx = scope.GetRequiredService<AppDbContext>();

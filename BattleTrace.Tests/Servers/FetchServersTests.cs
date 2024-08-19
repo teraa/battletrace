@@ -19,6 +19,7 @@ public class FetchServersTests : AppFactoryTests
     [Fact]
     public async Task KeepsPlayers()
     {
+        // Arrange
         var server = (
             db: new Server
             {
@@ -85,6 +86,7 @@ public class FetchServersTests : AppFactoryTests
         _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
 
+        // Act
         using (var scope = CreateScope())
         {
             var handler = scope.GetRequiredService<FetchServers>();
@@ -93,6 +95,7 @@ public class FetchServersTests : AppFactoryTests
         }
 
 
+        // Assert
         using (var scope = CreateScope())
         {
             var ctx = scope.GetRequiredService<AppDbContext>();
