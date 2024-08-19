@@ -99,7 +99,7 @@ public class IndexTests : AppFactoryTests
         }
 
         result.Should().BeOfType<Ok<List<Index.Result>>>()
-            .Subject.Value.Should().BeEquivalentTo(
+            .Subject.Value.Should().Equal(
                 [
                     player.api with {Id = "1", ServerId = "a"},
                     player.api with {Id = "2", ServerId = "b"},
