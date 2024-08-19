@@ -11,9 +11,9 @@ namespace BattleTrace.Features.Players.Actions;
 public static class Index
 {
     public record Query(
-        [FromQuery(Name = "id")] string?[] Ids,
-        string? NamePattern,
-        string? TagPattern,
+        [FromQuery(Name = "id")] string[]? Ids = null,
+        string? NamePattern = null,
+        string? TagPattern = null,
         [FromQuery(Name = "active")] bool ActiveOnly = false,
         int? Limit = null
     ) : IRequest<IResult>;

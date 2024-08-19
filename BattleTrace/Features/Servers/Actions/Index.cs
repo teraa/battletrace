@@ -11,9 +11,9 @@ namespace BattleTrace.Features.Servers.Actions;
 public static class Index
 {
     public record Query(
-        string? NamePattern,
-        Guid? Id,
-        [FromQuery(Name = "ip")] string? IpAddress,
+        string? NamePattern = null,
+        Guid? Id = null,
+        [FromQuery(Name = "ip")] string? IpAddress = null,
         int? Limit = null
     ) : IRequest<IResult>;
 
