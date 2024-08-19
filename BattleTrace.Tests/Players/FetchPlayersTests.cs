@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using Refit;
 
-namespace BattleTrace.Tests;
+namespace BattleTrace.Tests.Players;
 
 public class FetchPlayersTests : AppFactoryTests
 {

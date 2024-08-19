@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-namespace BattleTrace.Tests;
+namespace BattleTrace.Tests.Servers;
 
 public class FetchServersTests : AppFactoryTests
 {
