@@ -17,71 +17,126 @@ public class IndexTests : AppFactoryTests
         _appFactory = appFactory;
     }
 
+    private (Player Db, Index.Result Api) Player { get; } = (
+        new Player
+        {
+            Name = "",
+            NormalizedName = "",
+            Tag = "",
+        },
+        new Index.Result(
+            Id: "",
+            Name: "",
+            Tag: "",
+            ServerId: "",
+            ServerName: "",
+            UpdatedAt: default,
+            Faction: 0,
+            Team: 0,
+            Rank: 0,
+            Score: 0,
+            Kills: 0,
+            Deaths: 0,
+            Squad: 0,
+            Role: 0
+        )
+    );
+
+    private Server Server { get; } = new()
+    {
+        Name = "",
+        IpAddress = "",
+        Country = "",
+    };
+
+
+    [Fact]
+    public async Task MapsResultCorrectly()
+    {
+        var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
+        var player = new Player
+        {
+            Id = "id",
+            UpdatedAt = time,
+            Faction = 1,
+            Team = 2,
+            Name = "name",
+            NormalizedName = "normalized_name",
+            Tag = "tag",
+            Rank = 3,
+            Score = 4,
+            Kills = 5,
+            Deaths = 6,
+            Squad = 7,
+            Role = 8,
+            Server = Server with
+            {
+                Id = "server.id",
+                Name = "server.name",
+            },
+        };
+
+
+        using (var scope = CreateScope())
+        {
+            var ctx = scope.GetRequiredService<AppDbContext>();
+
+            ctx.Players.Add(player);
+
+            await ctx.SaveChangesAsync();
+        }
+
+        var query = new Index.Query();
+        IResult result;
+
+        using (var scope = CreateScope())
+        {
+            var sender = scope.GetRequiredService<ISender>();
+
+            result = await sender.Send(query);
+        }
+
+        result.Should().BeOfType<Ok<List<Index.Result>>>()
+            .Subject.Value.Should().Equal(
+                [
+                    new Index.Result(
+                        Id: player.Id,
+                        Name: player.Name,
+                        Tag: player.Tag,
+                        ServerId: player.Server.Id,
+                        ServerName: player.Server.Name,
+                        UpdatedAt: player.UpdatedAt,
+                        Faction: player.Faction,
+                        Team: player.Team,
+                        Rank: player.Rank,
+                        Score: player.Score,
+                        Kills: player.Kills,
+                        Deaths: player.Deaths,
+                        Squad: player.Squad,
+                        Role: player.Role
+                    ),
+                ]
+            );
+    }
+
     [Fact]
     public async Task DefaultQuery_ReturnsAllPlayers()
     {
-        var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
-
-        var server = new Server
-        {
-            Id = "",
-            Name = "",
-            IpAddress = "",
-            Country = "",
-            UpdatedAt = time,
-        };
-
-        var player = (
-            db: new Player
-            {
-                Id = "",
-                Name = "",
-                NormalizedName = "",
-                Tag = "",
-                ServerId = "",
-                UpdatedAt = time,
-                Faction = 0,
-                Team = 0,
-                Rank = 0,
-                Score = 0,
-                Kills = 0,
-                Deaths = 0,
-                Squad = 0,
-                Role = 0,
-            },
-            api: new Index.Result(
-                Id: "",
-                Name: "",
-                Tag: "",
-                ServerId: "",
-                ServerName: "",
-                UpdatedAt: time,
-                Faction: 0,
-                Team: 0,
-                Rank: 0,
-                Score: 0,
-                Kills: 0,
-                Deaths: 0,
-                Squad: 0,
-                Role: 0
-            )
-        );
-
         using (var scope = CreateScope())
         {
             var ctx = scope.GetRequiredService<AppDbContext>();
 
             ctx.Servers.AddRange(
                 [
-                    server with {Id = "a"},
-                    server with {Id = "b"},
+                    Server with {Id = "a"},
+                    Server with {Id = "b"},
                 ]
             );
 
             ctx.Players.AddRange(
                 [
-                    player.db with {Id = "1", ServerId = "a"},
-                    player.db with {Id = "2", ServerId = "b"},
+                    Player.Db with {Id = "1", ServerId = "a"},
+                    Player.Db with {Id = "2", ServerId = "b"},
                 ]
             );
 
@@ -101,8 +156,8 @@ public class IndexTests : AppFactoryTests
         result.Should().BeOfType<Ok<List<Index.Result>>>()
             .Subject.Value.Should().Equal(
                 [
-                    player.api with {Id = "1", ServerId = "a"},
-                    player.api with {Id = "2", ServerId = "b"},
+                    Player.Api with {Id = "1", ServerId = "a"},
+                    Player.Api with {Id = "2", ServerId = "b"},
                 ]
             );
     }
