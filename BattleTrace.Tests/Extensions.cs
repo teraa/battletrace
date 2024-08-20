@@ -1,3 +1,4 @@
+using BattleTrace.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BattleTrace.Tests;
@@ -36,4 +37,7 @@ public static class Extensions
     public static T GetRequiredService<T>(this IServiceScope scope)
         where T : notnull
         => scope.ServiceProvider.GetRequiredService<T>();
+
+    public static AppDbContext GetContext(this IServiceScope scope)
+        => scope.GetRequiredService<AppDbContext>();
 }
