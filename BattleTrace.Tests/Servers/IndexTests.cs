@@ -140,4 +140,46 @@ public class IndexTests : AppFactoryTests
                 ]
             );
     }
+
+    [Fact]
+    public async Task NamePatternQuery_ReturnsMatching()
+    {
+        // Arrange
+        using (var scope = CreateScope())
+        {
+            var ctx = scope.GetRequiredService<AppDbContext>();
+
+            ctx.Servers.AddRange(
+                [
+                    Server.Db with {Id = "1", Name = "foo"},
+                    Server.Db with {Id = "2", Name = "bar"},
+                    Server.Db with {Id = "3", Name = "baz"},
+                ]
+            );
+
+            await ctx.SaveChangesAsync();
+        }
+
+        var query = new Index.Query(NamePattern: "ba?");
+        IResult result;
+
+
+        // Act
+        using (var scope = CreateScope())
+        {
+            var sender = scope.GetRequiredService<ISender>();
+
+            result = await sender.Send(query);
+        }
+
+
+        // Assert
+        result.Should().BeOfType<Ok<List<Index.Result>>>()
+            .Subject.Value.Should().Equal(
+                [
+                    Server.Api with {Id = "2", Name = "bar"},
+                    Server.Api with {Id = "3", Name = "baz"},
+                ]
+            );
+    }
 }
