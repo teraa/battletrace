@@ -158,4 +158,86 @@ public class IndexTests : AppFactoryTests
                 ]
             );
     }
+
+    [Fact]
+    public async Task IdQuery_ReturnsMatching()
+    {
+        // Arrange
+        var servers = Enumerable.Range(0, 2)
+            .Select(_ => Server.Db with {Id = Guid.NewGuid().ToString()})
+            .ToArray();
+
+        await AddServers(servers);
+
+        var query = new Index.Query(Id: Guid.Parse(servers[1].Id));
+
+
+        // Act
+        var result = await Send(query);
+
+
+        // Assert
+        result.Should().BeOfType<Ok<List<Index.Result>>>()
+            .Subject.Value.Should().Equal(
+                [
+                    Server.Api with {Id = servers[1].Id},
+                ]
+            );
+    }
+
+    [Fact]
+    public async Task IpAddressQuery_ReturnsMatching()
+    {
+        // Arrange
+        await AddServers(
+            [
+                Server.Db with {Id = "a", IpAddress = "1"},
+                Server.Db with {Id = "b", IpAddress = "2"},
+            ]
+        );
+
+        var query = new Index.Query(IpAddress: "2");
+
+
+        // Act
+        var result = await Send(query);
+
+
+        // Assert
+        result.Should().BeOfType<Ok<List<Index.Result>>>()
+            .Subject.Value.Should().Equal(
+                [
+                    Server.Api with {Id = "b", IpAddress = "2"},
+                ]
+            );
+    }
+
+    [Fact]
+    public async Task Limit_ReturnsAtMostLimit()
+    {
+        // Arrange
+        await AddServers(
+            [
+                Server.Db with {Id = "a"},
+                Server.Db with {Id = "b"},
+                Server.Db with {Id = "c"},
+            ]
+        );
+
+        var query = new Index.Query(Limit: 2);
+
+
+        // Act
+        var result = await Send(query);
+
+
+        // Assert
+        result.Should().BeOfType<Ok<List<Index.Result>>>()
+            .Subject.Value.Should().Equal(
+                [
+                    Server.Api with {Id = "a"},
+                    Server.Api with {Id = "b"},
+                ]
+            );
+    }
 }
