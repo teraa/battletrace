@@ -10,12 +10,8 @@ namespace BattleTrace.Tests.Players;
 
 public class IndexTests : AppFactoryTests
 {
-    private readonly AppFactory _appFactory;
-
-    public IndexTests(AppFactory appFactory) : base(appFactory)
-    {
-        _appFactory = appFactory;
-    }
+    public IndexTests(AppFactory appFactory)
+        : base(appFactory) { }
 
     private (Player Db, Index.Result Api) Player { get; } = (
         new Player
@@ -50,6 +46,25 @@ public class IndexTests : AppFactoryTests
     };
 
 
+    private async Task AddPlayers(params Player[] players)
+    {
+        using var scope = CreateScope();
+        var ctx = scope.GetRequiredService<AppDbContext>();
+
+        ctx.Players.AddRange(players);
+
+        await ctx.SaveChangesAsync();
+    }
+
+    private async Task<IResult> Send(Index.Query query)
+    {
+        using var scope = CreateScope();
+        var sender = scope.GetRequiredService<ISender>();
+
+        return await sender.Send(query);
+    }
+
+
     [Fact]
     public async Task MapsResultCorrectly()
     {
@@ -76,26 +91,13 @@ public class IndexTests : AppFactoryTests
             },
         };
 
-        using (var scope = CreateScope())
-        {
-            var ctx = scope.GetRequiredService<AppDbContext>();
-
-            ctx.Players.Add(player);
-
-            await ctx.SaveChangesAsync();
-        }
+        await AddPlayers(player);
 
         var query = new Index.Query();
-        IResult result;
 
 
         // Act
-        using (var scope = CreateScope())
-        {
-            var sender = scope.GetRequiredService<ISender>();
-
-            result = await sender.Send(query);
-        }
+        var result = await Send(query);
 
 
         // Assert
@@ -126,38 +128,18 @@ public class IndexTests : AppFactoryTests
     public async Task DefaultQuery_ReturnsAllPlayers()
     {
         // Arrange
-        using (var scope = CreateScope())
-        {
-            var ctx = scope.GetRequiredService<AppDbContext>();
-
-            ctx.Servers.AddRange(
-                [
-                    Server with {Id = "a"},
-                    Server with {Id = "b"},
-                ]
-            );
-
-            ctx.Players.AddRange(
-                [
-                    Player.Db with {Id = "1", ServerId = "a"},
-                    Player.Db with {Id = "2", ServerId = "b"},
-                ]
-            );
-
-            await ctx.SaveChangesAsync();
-        }
+        await AddPlayers(
+            [
+                Player.Db with {Id = "1", Server = Server with {Id = "a"}},
+                Player.Db with {Id = "2", Server = Server with {Id = "b"}},
+            ]
+        );
 
         var query = new Index.Query();
-        IResult result;
 
 
         // Act
-        using (var scope = CreateScope())
-        {
-            var sender = scope.GetRequiredService<ISender>();
-
-            result = await sender.Send(query);
-        }
+        var result = await Send(query);
 
 
         // Assert
