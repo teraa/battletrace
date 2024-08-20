@@ -10,12 +10,8 @@ namespace BattleTrace.Tests.Servers;
 
 public class IndexTests : AppFactoryTests
 {
-    private readonly AppFactory _appFactory;
-
-    public IndexTests(AppFactory appFactory) : base(appFactory)
-    {
-        _appFactory = appFactory;
-    }
+    public IndexTests(AppFactory appFactory)
+        : base(appFactory) { }
 
     private (Server Db, Index.Result Api) Server { get; } = (
         new Server
@@ -42,6 +38,26 @@ public class IndexTests : AppFactoryTests
         Tag = "",
     };
 
+
+    private async Task AddServers(params Server[] servers)
+    {
+        using var scope = CreateScope();
+        var ctx = scope.GetRequiredService<AppDbContext>();
+
+        ctx.Servers.AddRange(servers);
+
+        await ctx.SaveChangesAsync();
+    }
+
+    private async Task<IResult> Send(Index.Query query)
+    {
+        using var scope = CreateScope();
+        var sender = scope.GetRequiredService<ISender>();
+
+        return await sender.Send(query);
+    }
+
+
     [Fact]
     public async Task MapsResultCorrectly()
     {
@@ -62,26 +78,13 @@ public class IndexTests : AppFactoryTests
             ],
         };
 
-        using (var scope = CreateScope())
-        {
-            var ctx = scope.GetRequiredService<AppDbContext>();
-
-            ctx.Servers.Add(server);
-
-            await ctx.SaveChangesAsync();
-        }
+        await AddServers(server);
 
         var query = new Index.Query();
-        IResult result;
 
 
         // Act
-        using (var scope = CreateScope())
-        {
-            var sender = scope.GetRequiredService<ISender>();
-
-            result = await sender.Send(query);
-        }
+        var result = await Send(query);
 
 
         // Assert
@@ -100,35 +103,21 @@ public class IndexTests : AppFactoryTests
             );
     }
 
+
     [Fact]
     public async Task DefaultQuery_ReturnsAllServers()
     {
         // Arrange
-        using (var scope = CreateScope())
-        {
-            var ctx = scope.GetRequiredService<AppDbContext>();
-
-            ctx.Servers.AddRange(
-                [
-                    Server.Db with {Id = "a"},
-                    Server.Db with {Id = "b"},
-                ]
-            );
-
-            await ctx.SaveChangesAsync();
-        }
-
-        var query = new Index.Query();
-        IResult result;
+        await AddServers(
+            [
+                Server.Db with {Id = "a"},
+                Server.Db with {Id = "b"},
+            ]
+        );
 
 
         // Act
-        using (var scope = CreateScope())
-        {
-            var sender = scope.GetRequiredService<ISender>();
-
-            result = await sender.Send(query);
-        }
+        var result = await Send(new Index.Query());
 
 
         // Assert
@@ -145,32 +134,19 @@ public class IndexTests : AppFactoryTests
     public async Task NamePatternQuery_ReturnsMatching()
     {
         // Arrange
-        using (var scope = CreateScope())
-        {
-            var ctx = scope.GetRequiredService<AppDbContext>();
-
-            ctx.Servers.AddRange(
-                [
-                    Server.Db with {Id = "1", Name = "foo"},
-                    Server.Db with {Id = "2", Name = "bar"},
-                    Server.Db with {Id = "3", Name = "baz"},
-                ]
-            );
-
-            await ctx.SaveChangesAsync();
-        }
+        await AddServers(
+            [
+                Server.Db with {Id = "1", Name = "foo"},
+                Server.Db with {Id = "2", Name = "bar"},
+                Server.Db with {Id = "3", Name = "baz"},
+            ]
+        );
 
         var query = new Index.Query(NamePattern: "ba?");
-        IResult result;
 
 
         // Act
-        using (var scope = CreateScope())
-        {
-            var sender = scope.GetRequiredService<ISender>();
-
-            result = await sender.Send(query);
-        }
+        var result = await Send(query);
 
 
         // Assert
