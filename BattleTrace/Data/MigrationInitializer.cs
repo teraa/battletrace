@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BattleTrace.Data;
 
 [UsedImplicitly]
-public class MigrationInitializer : IAsyncInitializer
+public sealed class MigrationInitializer : IAsyncInitializer
 {
     private readonly AppDbContext _ctx;
 

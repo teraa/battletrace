@@ -10,7 +10,7 @@ namespace BattleTrace.Features.Players.Actions;
 
 public static class Index
 {
-    public record Query(
+    public sealed record Query(
         [FromQuery(Name = "id")] string[]? Ids = null,
         string? NamePattern = null,
         string? TagPattern = null,
@@ -19,7 +19,7 @@ public static class Index
     ) : IRequest<IResult>;
 
     [UsedImplicitly]
-    public class QueryValidator : AbstractValidator<Query>
+    public sealed class QueryValidator : AbstractValidator<Query>
     {
         public QueryValidator()
         {
@@ -28,7 +28,7 @@ public static class Index
     }
 
     [UsedImplicitly]
-    public record Result(
+    public sealed record Result(
         string Id,
         string Name,
         string Tag,
@@ -45,7 +45,7 @@ public static class Index
         int Role);
 
     [UsedImplicitly]
-    public class Handler : IRequestHandler<Query, IResult>
+    public sealed class Handler : IRequestHandler<Query, IResult>
     {
         private readonly AppDbContext _ctx;
 

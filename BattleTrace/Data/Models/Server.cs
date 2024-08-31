@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BattleTrace.Data.Models
 {
     [PublicAPI]
-    public record Server
+    public sealed record Server
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -19,7 +19,7 @@ namespace BattleTrace.Data.Models
         public ICollection<Player> Players { get; set; }
     }
 
-    public class ServerConfiguration : IEntityTypeConfiguration<Server>
+    public sealed class ServerConfiguration : IEntityTypeConfiguration<Server>
     {
         public void Configure(EntityTypeBuilder<Server> builder)
         {

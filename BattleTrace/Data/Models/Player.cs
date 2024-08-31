@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BattleTrace.Data.Models
 {
     [PublicAPI]
-    public record Player
+    public sealed record Player
     {
         public string Id { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
@@ -26,7 +26,7 @@ namespace BattleTrace.Data.Models
         public Server Server { get; set; }
     }
 
-    public class PlayerConfiguration : IEntityTypeConfiguration<Player>
+    public sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
     {
         public void Configure(EntityTypeBuilder<Player> builder)
         {

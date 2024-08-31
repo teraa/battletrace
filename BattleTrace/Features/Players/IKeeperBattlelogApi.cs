@@ -10,13 +10,13 @@ public interface IKeeperBattlelogApi
         CancellationToken cancellationToken
     );
 
-    public record SnapshotResponse(Snapshot Snapshot);
+    public sealed record SnapshotResponse(Snapshot Snapshot);
 
-    public record Snapshot(Dictionary<string, TeamInfo> TeamInfo);
+    public sealed record Snapshot(Dictionary<string, TeamInfo> TeamInfo);
 
-    public record TeamInfo(int Faction, Dictionary<string, Player> Players);
+    public sealed record TeamInfo(int Faction, Dictionary<string, Player> Players);
 
-    public record Player(
+    public sealed record Player(
         string Name,
         string Tag,
         int Rank,

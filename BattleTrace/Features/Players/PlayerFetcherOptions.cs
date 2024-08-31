@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace BattleTrace.Features.Players;
 
-public class PlayerFetcherOptions
+public sealed class PlayerFetcherOptions
 {
     public TimeSpan MaxServerAge { get; init; } = TimeSpan.FromDays(2);
 
@@ -18,7 +18,7 @@ public class PlayerFetcherOptions
     };
 
     [UsedImplicitly]
-    public class Validator : AbstractValidator<PlayerFetcherOptions>
+    public sealed class Validator : AbstractValidator<PlayerFetcherOptions>
     {
         public Validator()
         {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace BattleTrace.Features.Servers;
 
 [UsedImplicitly]
-public class FetchServers
+public sealed class FetchServers
 {
     private readonly ServerFetcherOptions _options;
     private readonly AppDbContext _ctx;

@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace BattleTrace.Features.Servers;
 
-public class ServerFetcherOptions
+public sealed class ServerFetcherOptions
 {
     public int Offset { get; init; } = 45;
     public int Threshold { get; init; } = 10;
@@ -19,7 +19,7 @@ public class ServerFetcherOptions
     };
 
     [UsedImplicitly]
-    public class Validator : AbstractValidator<ServerFetcherOptions>
+    public sealed class Validator : AbstractValidator<ServerFetcherOptions>
     {
         public Validator()
         {

@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BattleTrace.Data.Models
 {
     [PublicAPI]
-    public class ServerScan
+    public sealed class ServerScan
     {
         public long Id { get; set; }
         public DateTimeOffset Timestamp { get; set; }
         public int ServerCount { get; set; }
 
-        public class EntityTypeConfiguration : IEntityTypeConfiguration<ServerScan>
+        public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<ServerScan>
         {
             public void Configure(EntityTypeBuilder<ServerScan> builder)
             {

@@ -11,9 +11,9 @@ public interface IBattlelogApi
         CancellationToken cancellationToken = default
     );
 
-    public record ServersResponse(IReadOnlyList<Server> Data);
+    public sealed record ServersResponse(IReadOnlyList<Server> Data);
 
-    public record Server(
+    public sealed record Server(
         string Guid,
         string Name,
         string Map,

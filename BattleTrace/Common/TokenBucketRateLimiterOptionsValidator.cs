@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace BattleTrace.Common;
 
-public class TokenBucketRateLimiterOptionsValidator : AbstractValidator<TokenBucketRateLimiterOptions>
+public sealed class TokenBucketRateLimiterOptionsValidator : AbstractValidator<TokenBucketRateLimiterOptions>
 {
     public TokenBucketRateLimiterOptionsValidator()
     {

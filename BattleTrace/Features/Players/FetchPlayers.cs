@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 namespace BattleTrace.Features.Players;
 
 [UsedImplicitly]
-public class FetchPlayers
+public sealed class FetchPlayers
 {
     private readonly PlayerFetcherOptions _options;
     private readonly AppDbContext _ctx;

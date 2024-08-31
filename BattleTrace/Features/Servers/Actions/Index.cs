@@ -10,7 +10,7 @@ namespace BattleTrace.Features.Servers.Actions;
 
 public static class Index
 {
-    public record Query(
+    public sealed record Query(
         string? NamePattern = null,
         Guid? Id = null,
         [FromQuery(Name = "ip")] string? IpAddress = null,
@@ -18,7 +18,7 @@ public static class Index
     ) : IRequest<IResult>;
 
     [UsedImplicitly]
-    public class QueryValidator : AbstractValidator<Query>
+    public sealed class QueryValidator : AbstractValidator<Query>
     {
         public QueryValidator()
         {
@@ -27,7 +27,7 @@ public static class Index
     }
 
     [UsedImplicitly]
-    public record Result(
+    public sealed record Result(
         string Id,
         string Name,
         string IpAddress,
@@ -36,7 +36,7 @@ public static class Index
         int Players);
 
     [UsedImplicitly]
-    public class Handler : IRequestHandler<Query, IResult>
+    public sealed class Handler : IRequestHandler<Query, IResult>
     {
         private readonly AppDbContext _ctx;
 
