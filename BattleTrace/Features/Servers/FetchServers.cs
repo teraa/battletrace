@@ -51,23 +51,33 @@ public sealed class FetchServers
             if (serversCount != servers.Count)
                 lastSuccessfulIndex = requestIndex;
 
-            _logger.LogDebug("Request {Request}: Found {NewServers} new servers, {TotalServers} total",
-                requestIndex, servers.Count - serversCount, servers.Count);
+            _logger.LogDebug(
+                "Request {Request}: Found {NewServers} new servers, {TotalServers} total",
+                requestIndex,
+                servers.Count - serversCount,
+                servers.Count
+            );
 
             requestIndex++;
         } while (requestIndex < lastSuccessfulIndex + _options.Threshold);
 
         sw.Stop();
-        _logger.LogInformation("Found {Servers} servers in {Requests} requests within {Duration}",
-            servers.Count, requestIndex, sw.Elapsed);
+        _logger.LogInformation(
+            "Found {Servers} servers in {Requests} requests within {Duration}",
+            servers.Count,
+            requestIndex,
+            sw.Elapsed
+        );
 
         var now = _time.GetUtcNow();
 
-        _ctx.ServerScans.Add(new Data.Models.ServerScan
-        {
-            Timestamp = now,
-            ServerCount = servers.Count,
-        });
+        _ctx.ServerScans.Add(
+            new Data.Models.ServerScan
+            {
+                Timestamp = now,
+                ServerCount = servers.Count,
+            }
+        );
 
         var serversToUpdate = await _ctx.Servers
             .Where(x => servers.Keys.Contains(x.Id))
@@ -75,16 +85,20 @@ public sealed class FetchServers
 
         _ctx.Servers.RemoveRange(serversToUpdate);
 
-        _ctx.Servers.AddRange(servers.Values.Select(x => new Data.Models.Server
-        {
-            Id = x.Guid,
-            Name = x.Name,
-            IpAddress = x.Ip,
-            Port = x.Port,
-            Country = x.Country,
-            TickRate = x.TickRate,
-            UpdatedAt = now,
-        }));
+        _ctx.Servers.AddRange(
+            servers.Values.Select(
+                x => new Data.Models.Server
+                {
+                    Id = x.Guid,
+                    Name = x.Name,
+                    IpAddress = x.Ip,
+                    Port = x.Port,
+                    Country = x.Country,
+                    TickRate = x.TickRate,
+                    UpdatedAt = now,
+                }
+            )
+        );
 
         await _ctx.SaveChangesAsync(cancellationToken);
     }

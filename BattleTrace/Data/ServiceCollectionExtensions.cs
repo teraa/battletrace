@@ -11,22 +11,27 @@ public static class ServiceCollectionExtensions
         services
             .AddAsyncInitializer<MigrationInitializer>()
             .AddValidatedOptions<DbOptions>()
-            .AddDbContext<AppDbContext>(static (services, options) =>
-            {
-                using var scope = services.CreateScope();
-                var dbOptions = scope.ServiceProvider
-                    .GetRequiredService<IOptionsMonitor<DbOptions>>()
-                    .CurrentValue;
-
-                options.UseNpgsql(dbOptions.ConnectionString, contextOptions =>
+            .AddDbContext<AppDbContext>(
+                static (services, options) =>
                 {
-                    contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                });
+                    using var scope = services.CreateScope();
+                    var dbOptions = scope.ServiceProvider
+                        .GetRequiredService<IOptionsMonitor<DbOptions>>()
+                        .CurrentValue;
+
+                    options.UseNpgsql(
+                        dbOptions.ConnectionString,
+                        contextOptions =>
+                        {
+                            contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                        }
+                    );
 
 #if DEBUG
-                options.EnableSensitiveDataLogging();
+                    options.EnableSensitiveDataLogging();
 #endif
-            });
+                }
+            );
 
         return services;
     }

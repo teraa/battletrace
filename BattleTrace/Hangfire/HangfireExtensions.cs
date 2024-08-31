@@ -11,14 +11,18 @@ public static class HangfireExtensions
     public static IServiceCollection AddHangfire(this IServiceCollection services)
     {
         return services
-            .AddHangfire(static (services, config) =>
-            {
-                config.UsePostgreSqlStorage(options =>
+            .AddHangfire(
+                static (services, config) =>
                 {
-                    var dbOptions = services.GetRequiredService<IOptions<DbOptions>>().Value;
-                    options.UseNpgsqlConnection(dbOptions.ConnectionString);
-                });
-            })
+                    config.UsePostgreSqlStorage(
+                        options =>
+                        {
+                            var dbOptions = services.GetRequiredService<IOptions<DbOptions>>().Value;
+                            options.UseNpgsqlConnection(dbOptions.ConnectionString);
+                        }
+                    );
+                }
+            )
             .AddHangfireServer()
             .AddValidatedOptions<HangfireOptions>()
             .AddAsyncInitializer<HangfireJobInitializer>();
@@ -29,10 +33,12 @@ public static class HangfireExtensions
         if (app.Environment.IsEnvironment("Test"))
             return app.MapGet("/hangfire", () => "test");
 
-        return app.MapHangfireDashboard(new DashboardOptions
-        {
-            Authorization = [],
-            AsyncAuthorization = [],
-        });
+        return app.MapHangfireDashboard(
+            new DashboardOptions
+            {
+                Authorization = [],
+                AsyncAuthorization = [],
+            }
+        );
     }
 }

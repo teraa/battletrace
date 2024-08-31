@@ -51,7 +51,8 @@ public class AppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.UseEnvironment("Test");
 
-        builder.ConfigureTestServices(services =>
+        builder.ConfigureTestServices(
+            services =>
             {
                 services.RemoveAll<TimeProvider>();
                 services.AddTransient<TimeProvider>(_ => TimeProviderMock.Object);

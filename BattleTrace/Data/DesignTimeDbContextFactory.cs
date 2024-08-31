@@ -17,11 +17,13 @@ internal sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<A
         var dbOptions = config.GetValidatedOptionsOrDefault<DbOptions>();
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseNpgsql(dbOptions.ConnectionString,
+            .UseNpgsql(
+                dbOptions.ConnectionString,
                 contextOptions =>
                 {
                     contextOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                });
+                }
+            );
 
         return new AppDbContext(optionsBuilder.Options);
     }

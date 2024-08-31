@@ -26,4 +26,3 @@ public interface IKeeperBattlelogApi
         int Squad,
         int Role);
 }
-

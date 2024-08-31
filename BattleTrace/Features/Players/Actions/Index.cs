@@ -94,21 +94,24 @@ public static class Index
                 query = query.Take(request.Limit.Value);
 
             var results = await query
-                .Select(x => new Result(
-                    x.Id,
-                    x.Name,
-                    x.Tag,
-                    x.ServerId,
-                    x.Server.Name,
-                    x.UpdatedAt,
-                    x.Faction,
-                    x.Team,
-                    x.Rank,
-                    x.Score,
-                    x.Kills,
-                    x.Deaths,
-                    x.Squad,
-                    x.Role))
+                .Select(
+                    x => new Result(
+                        x.Id,
+                        x.Name,
+                        x.Tag,
+                        x.ServerId,
+                        x.Server.Name,
+                        x.UpdatedAt,
+                        x.Faction,
+                        x.Team,
+                        x.Rank,
+                        x.Score,
+                        x.Kills,
+                        x.Deaths,
+                        x.Squad,
+                        x.Role
+                    )
+                )
                 .ToListAsync(cancellationToken);
 
             return Results.Ok(results);

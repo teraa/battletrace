@@ -72,15 +72,17 @@ public static class Index
                 .FirstOrDefaultAsync(cancellationToken);
 
             var finalQuery = query
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Name,
-                    x.IpAddress,
-                    x.Port,
-                    x.UpdatedAt,
-                    Players = x.Players.Count(p => p.UpdatedAt >= lastPlayerScan),
-                })
+                .Select(
+                    x => new
+                    {
+                        x.Id,
+                        x.Name,
+                        x.IpAddress,
+                        x.Port,
+                        x.UpdatedAt,
+                        Players = x.Players.Count(p => p.UpdatedAt >= lastPlayerScan),
+                    }
+                )
                 .OrderByDescending(x => x.Players)
                 .AsQueryable();
 

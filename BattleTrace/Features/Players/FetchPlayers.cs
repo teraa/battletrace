@@ -47,63 +47,84 @@ public sealed class FetchPlayers
         var responses = new ConcurrentBag
             <(string serverId, DateTimeOffset updatedAt, IKeeperBattlelogApi.SnapshotResponse response)>();
 
-        await Parallel.ForEachAsync(servers, cancellationToken, async (server, ct) =>
-        {
-            var httpResponse = await _api.GetSnapshot(server.Id, ct);
-            if (!httpResponse.IsSuccessStatusCode)
+        await Parallel.ForEachAsync(
+            servers,
+            cancellationToken,
+            async (server, ct) =>
             {
-                _logger.LogDebug(
-                    "Failed fetching players for {ServerId}, server returned: {StatusCode} ({ReasonPhrase})",
-                    server.Id, (int) httpResponse.StatusCode, httpResponse.ReasonPhrase);
+                var httpResponse = await _api.GetSnapshot(server.Id, ct);
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogDebug(
+                        "Failed fetching players for {ServerId}, server returned: {StatusCode} ({ReasonPhrase})",
+                        server.Id,
+                        (int) httpResponse.StatusCode,
+                        httpResponse.ReasonPhrase
+                    );
 
-                return;
+                    return;
+                }
+
+                var updatedAt = _time.GetUtcNow();
+
+                server.UpdatedAt = updatedAt;
+                responses.Add((server.Id, updatedAt, httpResponse.Content!));
             }
+        );
 
-            var updatedAt = _time.GetUtcNow();
-
-            server.UpdatedAt = updatedAt;
-            responses.Add((server.Id, updatedAt, httpResponse.Content!));
-        });
-
-        var players = responses.SelectMany(x => x.response.Snapshot.TeamInfo
-                .SelectMany(t => t.Value.Players
-                    .Select(p => new
-                    {
-                        ServerId = x.serverId,
-                        UpdatedAt = x.updatedAt,
-                        Team = t,
-                        Player = p,
-                    })))
+        var players = responses.SelectMany(
+                x => x.response.Snapshot.TeamInfo
+                    .SelectMany(
+                        t => t.Value.Players
+                            .Select(
+                                p => new
+                                {
+                                    ServerId = x.serverId,
+                                    UpdatedAt = x.updatedAt,
+                                    Team = t,
+                                    Player = p,
+                                }
+                            )
+                    )
+            )
             .GroupBy(x => x.Player.Key)
             .Select(group => group.MaxBy(x => x.UpdatedAt)!)
-            .Select(x => new Player
-            {
-                Id = x.Player.Key,
-                UpdatedAt = x.UpdatedAt,
-                ServerId = x.ServerId,
-                Faction = x.Team.Value.Faction,
-                Team = int.Parse(x.Team.Key),
-                Name = x.Player.Value.Name,
-                NormalizedName = x.Player.Value.Name.ToLowerInvariant(),
-                Tag = x.Player.Value.Tag,
-                Rank = x.Player.Value.Rank,
-                Score = x.Player.Value.Score,
-                Kills = x.Player.Value.Kills,
-                Deaths = x.Player.Value.Deaths,
-                Squad = x.Player.Value.Squad,
-                Role = x.Player.Value.Role,
-            })
+            .Select(
+                x => new Player
+                {
+                    Id = x.Player.Key,
+                    UpdatedAt = x.UpdatedAt,
+                    ServerId = x.ServerId,
+                    Faction = x.Team.Value.Faction,
+                    Team = int.Parse(x.Team.Key),
+                    Name = x.Player.Value.Name,
+                    NormalizedName = x.Player.Value.Name.ToLowerInvariant(),
+                    Tag = x.Player.Value.Tag,
+                    Rank = x.Player.Value.Rank,
+                    Score = x.Player.Value.Score,
+                    Kills = x.Player.Value.Kills,
+                    Deaths = x.Player.Value.Deaths,
+                    Squad = x.Player.Value.Squad,
+                    Role = x.Player.Value.Role,
+                }
+            )
             .ToList();
 
         sw.Stop();
-        _logger.LogInformation("Fetched {Players} players from {Servers} servers in {Duration}", players.Count,
-            servers.Count, sw.Elapsed);
+        _logger.LogInformation(
+            "Fetched {Players} players from {Servers} servers in {Duration}",
+            players.Count,
+            servers.Count,
+            sw.Elapsed
+        );
 
-        _ctx.PlayerScans.Add(new PlayerScan
-        {
-            Timestamp = scanAt,
-            PlayerCount = players.Count,
-        });
+        _ctx.PlayerScans.Add(
+            new PlayerScan
+            {
+                Timestamp = scanAt,
+                PlayerCount = players.Count,
+            }
+        );
 
         var playerIds = players.Select(x => x.Id).ToList();
         var playersToUpdate = await _ctx.Players
