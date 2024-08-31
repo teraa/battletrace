@@ -1,21 +1,10 @@
-﻿using BattleTrace.Data;
-using BattleTrace.Data.Models;
-using BattleTrace.Features.Servers;
-using FluentAssertions;
+﻿using BattleTrace.Features.Servers;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace BattleTrace.Tests.Servers;
 
-public class FetchServersTests : AppFactoryTests
+public class FetchServersTests(AppFactory appFactory) : AppTests(appFactory)
 {
-    private readonly AppFactory _appFactory;
-
-    public FetchServersTests(AppFactory appFactory) : base(appFactory)
-    {
-        _appFactory = appFactory;
-    }
-
     [Fact]
     public async Task KeepsPlayers()
     {
@@ -68,7 +57,7 @@ public class FetchServersTests : AppFactoryTests
             await ctx.SaveChangesAsync();
         }
 
-        _appFactory.BattlelogApiMock.Setup(x => x.GetServers(0, It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        AppFactory.BattlelogApiMock.Setup(x => x.GetServers(0, It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new IBattlelogApi.ServersResponse(
                     [
@@ -78,12 +67,12 @@ public class FetchServersTests : AppFactoryTests
                 )
             );
 
-        _appFactory.BattlelogApiMock
+        AppFactory.BattlelogApiMock
             .Setup(x => x.GetServers(It.IsNotIn(0), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new IBattlelogApi.ServersResponse([]));
 
         var time = DateTimeOffset.Parse("2000-01-01T00:00Z");
-        _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
+        AppFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
 
         // Act

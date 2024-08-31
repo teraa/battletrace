@@ -1,4 +1,3 @@
-using BattleTrace.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BattleTrace.Tests;

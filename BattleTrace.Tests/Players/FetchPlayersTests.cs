@@ -1,23 +1,12 @@
 ﻿using System.Net;
-using BattleTrace.Data;
-using BattleTrace.Data.Models;
 using BattleTrace.Features.Players;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Refit;
 
 namespace BattleTrace.Tests.Players;
 
-public class FetchPlayersTests : AppFactoryTests
+public class FetchPlayersTests(AppFactory appFactory) : AppTests(appFactory)
 {
-    private readonly AppFactory _appFactory;
-
-    public FetchPlayersTests(AppFactory appFactory) : base(appFactory)
-    {
-        _appFactory = appFactory;
-    }
-
     [Fact]
     public async Task KeepsPlayers()
     {
@@ -76,7 +65,7 @@ public class FetchPlayersTests : AppFactoryTests
             await ctx.SaveChangesAsync();
         }
 
-        _appFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("a", It.IsAny<CancellationToken>()))
+        AppFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("a", It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ApiResponse<IKeeperBattlelogApi.SnapshotResponse>(
                     response: new HttpResponseMessage(HttpStatusCode.OK),
@@ -99,7 +88,7 @@ public class FetchPlayersTests : AppFactoryTests
                 )
             );
 
-        _appFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("b", It.IsAny<CancellationToken>()))
+        AppFactory.KeeperBattlelogApiMock.Setup(x => x.GetSnapshot("b", It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ApiResponse<IKeeperBattlelogApi.SnapshotResponse>(
                     response: new HttpResponseMessage(HttpStatusCode.NotFound),
@@ -108,7 +97,7 @@ public class FetchPlayersTests : AppFactoryTests
                 )
             );
 
-        _appFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
+        AppFactory.TimeProviderMock.Setup(x => x.GetUtcNow()).Returns(time);
 
 
         // Act

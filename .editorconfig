@@ -11,6 +11,8 @@ end_of_line = lf
 
 [{**/*Options.cs,**/Data/Models/*.cs}]
 dotnet_diagnostic.CS8618.severity = none # Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+resharper_unused_auto_property_accessor_global_highlighting = none
+resharper_auto_property_can_be_made_get_only_global_highlighting = none
 
 [{*.cs,*.csproj,*.yml}]
 trim_trailing_whitespace = true

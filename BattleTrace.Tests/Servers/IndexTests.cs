@@ -1,18 +1,10 @@
-﻿using BattleTrace.Data;
-using BattleTrace.Data.Models;
-using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http;
 using Index = BattleTrace.Features.Servers.Actions.Index;
 
 namespace BattleTrace.Tests.Servers;
 
-public class IndexTests : AppFactoryTests
+public class IndexTests(AppFactory appFactory) : AppTests(appFactory)
 {
-    public IndexTests(AppFactory appFactory)
-        : base(appFactory) { }
-
     private (Server Db, Index.Result Api) Server { get; } = (
         new Server
         {

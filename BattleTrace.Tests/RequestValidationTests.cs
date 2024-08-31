@@ -1,7 +1,4 @@
 ﻿using System.Net;
-using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using IndexPlayers = BattleTrace.Features.Players.Actions.Index;
 using IndexServers = BattleTrace.Features.Servers.Actions.Index;
@@ -9,7 +6,7 @@ using IndexServers = BattleTrace.Features.Servers.Actions.Index;
 namespace BattleTrace.Tests;
 
 public class RequestValidationTests(AppFactory appFactory)
-    : AppFactoryTests(appFactory)
+    : AppTests(appFactory)
 {
     [Fact]
     public async Task IndexPlayers_ReturnsBadRequest_WhenInvalid()
@@ -40,7 +37,7 @@ public class RequestValidationTests(AppFactory appFactory)
     [Fact]
     public async Task GetPlayers_ReturnsOk()
     {
-        var client = appFactory.CreateClient();
+        var client = AppFactory.CreateClient();
 
         var response = await client.GetAsync("/players");
 
@@ -50,7 +47,7 @@ public class RequestValidationTests(AppFactory appFactory)
     [Fact]
     public async Task GetPlayersWithLimit0_ReturnsBadRequest()
     {
-        var client = appFactory.CreateClient();
+        var client = AppFactory.CreateClient();
 
         var response = await client.GetAsync("/players?limit=0");
 
@@ -60,7 +57,7 @@ public class RequestValidationTests(AppFactory appFactory)
     [Fact]
     public async Task GetServers_ReturnsOk()
     {
-        var client = appFactory.CreateClient();
+        var client = AppFactory.CreateClient();
 
         var response = await client.GetAsync("/servers");
 
@@ -70,7 +67,7 @@ public class RequestValidationTests(AppFactory appFactory)
     [Fact]
     public async Task GetServersWithLimit0_ReturnsBadRequest()
     {
-        var client = appFactory.CreateClient();
+        var client = AppFactory.CreateClient();
 
         var response = await client.GetAsync("/servers?limit=0");
 

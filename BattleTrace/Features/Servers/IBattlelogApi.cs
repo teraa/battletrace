@@ -11,10 +11,8 @@ public interface IBattlelogApi
         CancellationToken cancellationToken = default
     );
 
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record ServersResponse(IReadOnlyList<Server> Data);
 
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record Server(
         string Guid,
         string Name,

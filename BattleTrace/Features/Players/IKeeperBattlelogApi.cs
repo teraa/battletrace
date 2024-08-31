@@ -1,6 +1,4 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
-
-using Refit;
+﻿using Refit;
 
 namespace BattleTrace.Features.Players;
 

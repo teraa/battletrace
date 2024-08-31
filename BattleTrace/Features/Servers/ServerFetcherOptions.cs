@@ -3,8 +3,6 @@ using BattleTrace.Common;
 using FluentValidation;
 using JetBrains.Annotations;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace BattleTrace.Features.Servers;
 
 public class ServerFetcherOptions

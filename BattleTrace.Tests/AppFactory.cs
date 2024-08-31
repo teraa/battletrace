@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using BattleTrace.Data;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Hangfire;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Moq;
 using Npgsql;
 using Respawn;
 using Respawn.Graph;
@@ -18,13 +16,15 @@ using Respawn.Graph;
 namespace BattleTrace.Tests;
 
 [Collection(AppFactoryFixture.CollectionName)]
-public abstract class AppFactoryTests(AppFactory appFactory) : IAsyncLifetime
+public abstract class AppTests(AppFactory appFactory) : IAsyncLifetime
 {
-    public Task InitializeAsync() => appFactory.InitializeAsync();
+    protected AppFactory AppFactory { get; } = appFactory;
 
-    public Task DisposeAsync() => appFactory.DisposeAsync();
+    public Task InitializeAsync() => AppFactory.InitializeAsync();
 
-    protected IServiceScope CreateScope() => appFactory.Services.CreateScope();
+    public Task DisposeAsync() => AppFactory.DisposeAsync();
+
+    protected IServiceScope CreateScope() => AppFactory.Services.CreateScope();
 }
 
 [CollectionDefinition(CollectionName)]

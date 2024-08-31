@@ -6,8 +6,6 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable ClassNeverInstantiated.Local
-
 namespace BattleTrace.Features.Players;
 
 [UsedImplicitly]
