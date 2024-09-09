@@ -3,6 +3,8 @@ using System.Diagnostics;
 using BattleTrace.Data;
 using BattleTrace.Data.Models;
 using JetBrains.Annotations;
+using LinqToDB.Data;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -126,14 +128,18 @@ public sealed class FetchPlayers
             }
         );
 
-        var playerIds = players.Select(x => x.Id).ToList();
-        var playersToUpdate = await _ctx.Players
-            .Where(x => playerIds.Contains(x.Id))
-            .ToListAsync(cancellationToken);
-
-        // Removing and adding here will result in an UPDATE for changed fields for each entity, not a DELETE + INSERT!
-        _ctx.Players.RemoveRange(playersToUpdate);
-        _ctx.Players.AddRange(players);
         await _ctx.SaveChangesAsync(cancellationToken);
+
+        var playerIds = players.Select(x => x.Id).ToList();
+
+        await _ctx.Players
+            .Where(x => playerIds.Contains(x.Id))
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _ctx.BulkCopyAsync(
+            new BulkCopyOptions(),
+            players,
+            cancellationToken
+        );
     }
 }
