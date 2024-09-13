@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using BattleTrace.Data;
 using JetBrains.Annotations;
+using LinqToDB.Data;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -79,27 +81,29 @@ public sealed class FetchServers
             }
         );
 
-        var serversToUpdate = await _ctx.Servers
+        await _ctx.SaveChangesAsync(cancellationToken);
+
+        await _ctx.Servers
             .Where(x => servers.Keys.Contains(x.Id))
-            .ToListAsync(cancellationToken);
+            .ExecuteDeleteAsync(cancellationToken);
 
-        _ctx.Servers.RemoveRange(serversToUpdate);
-
-        _ctx.Servers.AddRange(
-            servers.Values.Select(
-                x => new Data.Models.Server
-                {
-                    Id = x.Guid,
-                    Name = x.Name,
-                    IpAddress = x.Ip,
-                    Port = x.Port,
-                    Country = x.Country,
-                    TickRate = x.TickRate,
-                    UpdatedAt = now,
-                }
-            )
+        var entities = servers.Values.Select(
+            x => new Data.Models.Server
+            {
+                Id = x.Guid,
+                Name = x.Name,
+                IpAddress = x.Ip,
+                Port = x.Port,
+                Country = x.Country,
+                TickRate = x.TickRate,
+                UpdatedAt = now,
+            }
         );
 
-        await _ctx.SaveChangesAsync(cancellationToken);
+        await _ctx.BulkCopyAsync(
+            new BulkCopyOptions(),
+            entities,
+            cancellationToken
+        );
     }
 }
