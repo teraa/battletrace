@@ -120,6 +120,8 @@ public sealed class FetchPlayers
             sw.Elapsed
         );
 
+        await using var tsc = await _ctx.Database.BeginTransactionAsync(cancellationToken);
+
         _ctx.PlayerScans.Add(
             new PlayerScan
             {
@@ -141,5 +143,7 @@ public sealed class FetchPlayers
             players,
             cancellationToken
         );
+
+        await tsc.CommitAsync(cancellationToken);
     }
 }

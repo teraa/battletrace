@@ -73,6 +73,8 @@ public sealed class FetchServers
 
         var now = _time.GetUtcNow();
 
+        await using var tsc = await _ctx.Database.BeginTransactionAsync(cancellationToken);
+
         _ctx.ServerScans.Add(
             new Data.Models.ServerScan
             {
@@ -105,5 +107,7 @@ public sealed class FetchServers
             entities,
             cancellationToken
         );
+
+        await tsc.CommitAsync(cancellationToken);
     }
 }
