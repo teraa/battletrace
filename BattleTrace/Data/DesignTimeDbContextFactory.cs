@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Teraa.Extensions.Configuration;
+using Teraa.Shared.Configuration;
 
 namespace BattleTrace.Data;
 

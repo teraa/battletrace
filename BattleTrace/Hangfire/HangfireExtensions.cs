@@ -2,7 +2,7 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.Extensions.Options;
-using Teraa.Extensions.Configuration;
+using Teraa.Shared.Configuration;
 
 namespace BattleTrace.Hangfire;
 

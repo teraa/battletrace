@@ -1,13 +1,13 @@
 using FluentValidation;
 using Serilog;
-using Teraa.Extensions.AspNetCore;
+using Teraa.Shared.AspNetCore;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
 using BattleTrace.Hangfire;
-using Teraa.Extensions.Configuration.Vault.Options;
-using Teraa.Extensions.Serilog.Systemd;
-using Teraa.Extensions.Serilog.Seq;
+using Teraa.Shared.Configuration.Vault;
+using Teraa.Shared.Serilog.Systemd;
+using Teraa.Shared.Serilog.Seq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,16 +21,18 @@ builder.Host
             options.ValidateScopes = true;
         }
     )
-    .UseSystemd()
-    .UseSerilog(
-        (hostContext, options) =>
-        {
-            options
-                .ReadFrom.Configuration(hostContext.Configuration)
-                .ConfigureSystemdConsole()
-                .ConfigureSeq(hostContext);
-        }
+    .UseSystemd();
+
+
+builder.Logging
+    .ClearProviders()
+    .AddSerilog(
+        new LoggerConfiguration()
+            .ConfigureDefaultLoggerConfiguration(builder.Configuration)
+            .ConfigureSeq(builder.Configuration)
+            .CreateLogger()
     );
+
 
 builder.Services
     .AddAuthentication()

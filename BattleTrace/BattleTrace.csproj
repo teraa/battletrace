@@ -33,11 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Extensions\AspNetCore\Extensions.AspNetCore.csproj" />
-    <ProjectReference Include="..\Extensions\Configuration.Vault.Options\Extensions.Configuration.Vault.Options.csproj" />
-    <ProjectReference Include="..\Extensions\Configuration\Extensions.Configuration.csproj" />
-    <ProjectReference Include="..\Extensions\Serilog.Seq\Extensions.Serilog.Seq.csproj" />
-    <ProjectReference Include="..\Extensions\Serilog.Systemd\Extensions.Serilog.Systemd.csproj" />
+    <ProjectReference Include="..\Shared\AspNetCore\Shared.AspNetCore.csproj" />
+    <ProjectReference Include="..\Shared\Configuration.Vault\Shared.Configuration.Vault.csproj" />
+    <ProjectReference Include="..\Shared\Configuration\Shared.Configuration.csproj" />
+    <ProjectReference Include="..\Shared\Serilog.Seq\Shared.Serilog.Seq.csproj" />
+    <ProjectReference Include="..\Shared\Serilog.Systemd\Shared.Serilog.Systemd.csproj" />
   </ItemGroup>
 
 </Project>

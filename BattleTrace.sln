@@ -5,19 +5,17 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleTrace", "BattleTrace\BattleTrace.csproj", "{C6F24D25-F91E-40BD-8F52-92D9BFF903FB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{8C8585F3-F81A-4CE1-A1CB-4D80CED773A5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{8C8585F3-F81A-4CE1-A1CB-4D80CED773A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.AspNetCore", "Extensions\AspNetCore\Extensions.AspNetCore.csproj", "{71387DD0-9E80-418E-8F00-65FA1BBF1CE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.AspNetCore", "Shared\AspNetCore\Shared.AspNetCore.csproj", "{71387DD0-9E80-418E-8F00-65FA1BBF1CE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Configuration", "Extensions\Configuration\Extensions.Configuration.csproj", "{CD1257A7-5236-412A-93B1-75554554B369}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Configuration", "Shared\Configuration\Shared.Configuration.csproj", "{CD1257A7-5236-412A-93B1-75554554B369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Serilog.Seq", "Extensions\Serilog.Seq\Extensions.Serilog.Seq.csproj", "{80CFDAC1-DAE2-4278-8754-E109B33FCFC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Serilog.Seq", "Shared\Serilog.Seq\Shared.Serilog.Seq.csproj", "{80CFDAC1-DAE2-4278-8754-E109B33FCFC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Serilog.Systemd", "Extensions\Serilog.Systemd\Extensions.Serilog.Systemd.csproj", "{FDF939F4-EEDA-43B7-8A63-2012E698DE60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Serilog.Systemd", "Shared\Serilog.Systemd\Shared.Serilog.Systemd.csproj", "{FDF939F4-EEDA-43B7-8A63-2012E698DE60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Configuration.Vault", "Extensions\Configuration.Vault\Extensions.Configuration.Vault.csproj", "{67503B8C-0C34-4718-A2DB-F5737B2AA4FC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Configuration.Vault.Options", "Extensions\Configuration.Vault.Options\Extensions.Configuration.Vault.Options.csproj", "{D6296D5E-5BBC-4034-BFB3-A0DCD2537E94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Configuration.Vault", "Shared\Configuration.Vault\Shared.Configuration.Vault.csproj", "{67503B8C-0C34-4718-A2DB-F5737B2AA4FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleTrace.Tests", "BattleTrace.Tests\BattleTrace.Tests.csproj", "{58DAE059-BBF4-4D97-917F-3E9D9AF87B79}"
 EndProject
@@ -54,10 +52,6 @@ Global
 		{67503B8C-0C34-4718-A2DB-F5737B2AA4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67503B8C-0C34-4718-A2DB-F5737B2AA4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67503B8C-0C34-4718-A2DB-F5737B2AA4FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D6296D5E-5BBC-4034-BFB3-A0DCD2537E94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6296D5E-5BBC-4034-BFB3-A0DCD2537E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6296D5E-5BBC-4034-BFB3-A0DCD2537E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6296D5E-5BBC-4034-BFB3-A0DCD2537E94}.Release|Any CPU.Build.0 = Release|Any CPU
 		{58DAE059-BBF4-4D97-917F-3E9D9AF87B79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{58DAE059-BBF4-4D97-917F-3E9D9AF87B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58DAE059-BBF4-4D97-917F-3E9D9AF87B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,6 +63,5 @@ Global
 		{80CFDAC1-DAE2-4278-8754-E109B33FCFC1} = {8C8585F3-F81A-4CE1-A1CB-4D80CED773A5}
 		{FDF939F4-EEDA-43B7-8A63-2012E698DE60} = {8C8585F3-F81A-4CE1-A1CB-4D80CED773A5}
 		{67503B8C-0C34-4718-A2DB-F5737B2AA4FC} = {8C8585F3-F81A-4CE1-A1CB-4D80CED773A5}
-		{D6296D5E-5BBC-4034-BFB3-A0DCD2537E94} = {8C8585F3-F81A-4CE1-A1CB-4D80CED773A5}
 	EndGlobalSection
 EndGlobal

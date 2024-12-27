@@ -5,8 +5,8 @@ using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Refit;
-using Teraa.Extensions.AspNetCore;
-using Teraa.Extensions.Configuration;
+using Teraa.Shared.AspNetCore;
+using Teraa.Shared.Configuration;
 using Index = BattleTrace.Features.Servers.Actions.Index;
 
 namespace BattleTrace.Features.Servers;

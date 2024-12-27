@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Teraa.Extensions.Configuration;
+using Teraa.Shared.Configuration;
 
 namespace BattleTrace.Data;
 
