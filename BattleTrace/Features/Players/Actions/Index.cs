@@ -59,7 +59,7 @@ public static class Index
             var query = _ctx.Players.AsQueryable();
 
             if (request.Ids is {Length: > 0})
-                query = query.Where(x => request.Ids.Contains(x.Id));
+                query = query.Where(x => request.Ids.AsEnumerable().Contains(x.Id));
 
             if (request.NamePattern is {Length: > 0})
             {
