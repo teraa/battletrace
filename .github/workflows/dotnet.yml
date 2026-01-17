@@ -24,15 +24,15 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           token: ${{ secrets.PAT }}
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Add Github Packages NuGet feed
         run: >
@@ -46,16 +46,33 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore -r linux-x64
 
+      - name: Build main project
+        run: >
+          dotnet build BattleTrace
+          --no-restore -c Release -r linux-x64 --self-contained
+          -p:DebugType=None
+          -p:GenerateDocumentationFile=false
+
+      - name: Build tests
+        run: >
+          dotnet build BattleTrace.Tests
+          --no-restore -c Release -r linux-x64 --self-contained
+          -p:DebugType=None
+          -p:GenerateDocumentationFile=false
+
       - name: Test
-        run: dotnet test --no-restore -c Release -r linux-x64 -v minimal --logger "console;verbosity=detailed"
+        run: >
+          dotnet test
+          --no-build -c Release -r linux-x64
+          -v minimal --logger "console;verbosity=detailed"
         env:
           Db__ConnectionString: "Host=localhost;Port=5432;Database=battletrace_tests;Username=postgres;Password=postgres;Include Error Detail=true;Command Timeout=60"
 
       - name: Publish
         run: >
           dotnet publish BattleTrace
-          --no-restore -c Release -r linux-x64 --self-contained false -o bin/publish/
-          -p:GenerateDocumentationFile=false
+          --no-build -c Release -r linux-x64 --self-contained
+          -o bin/publish/
           -p:PublishSingleFile=true
           -p:DebugType=None
 
