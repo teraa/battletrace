@@ -44,9 +44,9 @@ public class IndexTests(AppFactory appFactory) : AppTests(appFactory)
     private async Task<IResult> Send(Index.Query query)
     {
         using var scope = CreateScope();
-        var sender = scope.GetRequiredService<ISender>();
+        var handler = scope.GetRequiredService<Index.Handler>();
 
-        return await sender.Send(query);
+        return await handler.HandleAsync(query);
     }
 
 

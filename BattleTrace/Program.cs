@@ -1,13 +1,17 @@
+using BattleTrace;
 using FluentValidation;
 using Serilog;
-using Teraa.Shared.AspNetCore;
 using BattleTrace.Features.Players;
 using BattleTrace.Features.Servers;
 using BattleTrace.Data;
 using BattleTrace.Hangfire;
+using Immediate.Handlers.Shared;
+using Teraa.Shared.AspNetCore.MinimalApis;
 using Teraa.Shared.Configuration.Vault;
 using Teraa.Shared.Serilog.Systemd;
 using Teraa.Shared.Serilog.Seq;
+
+[assembly: Behaviors(typeof(RequestValidationBehavior<,>))]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,13 +44,8 @@ builder.Services
     .AddAuthorization()
     .AddCors()
     .AddDb()
-    .AddMediatR(
-        config =>
-        {
-            config.RegisterServicesFromAssemblyContaining<Program>();
-        }
-    )
-    .AddRequestValidationBehaviour()
+    .AddBattleTraceHandlers()
+    .AddBattleTraceBehaviors()
     .AddValidatorsFromAssemblyContaining<Program>()
     .AddMemoryCache()
     .AddHttpClient()

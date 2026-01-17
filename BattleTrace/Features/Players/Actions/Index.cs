@@ -1,14 +1,15 @@
 ﻿using BattleTrace.Common;
 using BattleTrace.Data;
 using FluentValidation;
+using Immediate.Handlers.Shared;
 using JetBrains.Annotations;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BattleTrace.Features.Players.Actions;
 
-public static class Index
+[Handler]
+public static partial class Index
 {
     public sealed record Query(
         [FromQuery(Name = "id")] string[]? Ids = null,
@@ -16,7 +17,7 @@ public static class Index
         string? TagPattern = null,
         [FromQuery(Name = "active")] bool ActiveOnly = false,
         int? Limit = null
-    ) : IRequest<IResult>;
+    );
 
     [UsedImplicitly]
     public sealed class QueryValidator : AbstractValidator<Query>
@@ -44,77 +45,69 @@ public static class Index
         int Squad,
         int Role);
 
-    [UsedImplicitly]
-    public sealed class Handler : IRequestHandler<Query, IResult>
+    private static async ValueTask<IResult> HandleAsync(
+        Query request,
+        AppDbContext ctx,
+        CancellationToken cancellationToken)
     {
-        private readonly AppDbContext _ctx;
+        var query = ctx.Players.AsQueryable();
 
-        public Handler(AppDbContext ctx)
+        if (request.Ids is {Length: > 0})
+            query = query.Where(x => request.Ids.AsEnumerable().Contains(x.Id));
+
+        if (request.NamePattern is {Length: > 0})
         {
-            _ctx = ctx;
+            var pattern = Helpers.StringToLikePattern(request.NamePattern.ToLowerInvariant());
+
+            query = query.Where(x => EF.Functions.Like(x.NormalizedName, pattern, @"\"));
         }
 
-        public async Task<IResult> Handle(Query request, CancellationToken cancellationToken)
+        if (request.TagPattern is {Length: > 0})
         {
-            var query = _ctx.Players.AsQueryable();
+            var pattern = Helpers.StringToLikePattern(request.TagPattern);
 
-            if (request.Ids is {Length: > 0})
-                query = query.Where(x => request.Ids.AsEnumerable().Contains(x.Id));
+            query = query.Where(x => EF.Functions.ILike(x.Tag, pattern, @"\"));
+        }
 
-            if (request.NamePattern is {Length: > 0})
-            {
-                var pattern = Helpers.StringToLikePattern(request.NamePattern.ToLowerInvariant());
+        if (request.ActiveOnly)
+        {
+            var lastScan = await ctx.PlayerScans
+                .Select(x => x.Timestamp)
+                .OrderByDescending(x => x)
+                .FirstOrDefaultAsync(cancellationToken);
 
-                query = query.Where(x => EF.Functions.Like(x.NormalizedName, pattern, @"\"));
-            }
+            if (lastScan == default)
+                return Results.Ok(Array.Empty<Result>());
 
-            if (request.TagPattern is {Length: > 0})
-            {
-                var pattern = Helpers.StringToLikePattern(request.TagPattern);
+            query = query.Where(x => x.UpdatedAt >= lastScan);
+        }
 
-                query = query.Where(x => EF.Functions.ILike(x.Tag, pattern, @"\"));
-            }
+        query = query.OrderBy(x => x.NormalizedName);
 
-            if (request.ActiveOnly)
-            {
-                var lastScan = await _ctx.PlayerScans
-                    .Select(x => x.Timestamp)
-                    .OrderByDescending(x => x)
-                    .FirstOrDefaultAsync(cancellationToken);
+        if (request.Limit is not null)
+            query = query.Take(request.Limit.Value);
 
-                if (lastScan == default)
-                    return Results.Ok(Array.Empty<Result>());
-
-                query = query.Where(x => x.UpdatedAt >= lastScan);
-            }
-
-            query = query.OrderBy(x => x.NormalizedName);
-
-            if (request.Limit is not null)
-                query = query.Take(request.Limit.Value);
-
-            var results = await query
-                .Select(
-                    x => new Result(
-                        x.Id,
-                        x.Name,
-                        x.Tag,
-                        x.ServerId,
-                        x.Server.Name,
-                        x.UpdatedAt,
-                        x.Faction,
-                        x.Team,
-                        x.Rank,
-                        x.Score,
-                        x.Kills,
-                        x.Deaths,
-                        x.Squad,
-                        x.Role
-                    )
+        var results = await query
+            .Select(
+                x => new Result(
+                    x.Id,
+                    x.Name,
+                    x.Tag,
+                    x.ServerId,
+                    x.Server.Name,
+                    x.UpdatedAt,
+                    x.Faction,
+                    x.Team,
+                    x.Rank,
+                    x.Score,
+                    x.Kills,
+                    x.Deaths,
+                    x.Squad,
+                    x.Role
                 )
-                .ToListAsync(cancellationToken);
+            )
+            .ToListAsync(cancellationToken);
 
-            return Results.Ok(results);
-        }
+        return Results.Ok(results);
     }
 }

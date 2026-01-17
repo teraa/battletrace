@@ -12,10 +12,10 @@ public class RequestValidationTests(AppFactory appFactory)
     public async Task IndexPlayers_ReturnsBadRequest_WhenInvalid()
     {
         using var scope = CreateScope();
-        var sender = scope.GetRequiredService<ISender>();
+        var handler = scope.GetRequiredService<IndexPlayers.Handler>();
         var request = new IndexPlayers.Query(null, null, null, Limit: 0);
 
-        var response = await sender.Send(request);
+        var response = await handler.HandleAsync(request);
 
         response.Should().BeOfType<BadRequest<ValidationProblemDetails>>()
             .Subject.Value!.Errors.Keys.Should().BeEquivalentTo(["Limit"]);
@@ -25,10 +25,10 @@ public class RequestValidationTests(AppFactory appFactory)
     public async Task IndexServers_ReturnsBadRequest_WhenInvalid()
     {
         using var scope = CreateScope();
-        var sender = scope.GetRequiredService<ISender>();
+        var handler = scope.GetRequiredService<IndexServers.Handler>();
         var request = new IndexServers.Query(null, null, null, Limit: 0);
 
-        var response = await sender.Send(request);
+        var response = await handler.HandleAsync(request);
 
         response.Should().BeOfType<BadRequest<ValidationProblemDetails>>()
             .Subject.Value!.Errors.Keys.Should().BeEquivalentTo(["Limit"]);

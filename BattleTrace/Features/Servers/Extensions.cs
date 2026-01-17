@@ -1,6 +1,5 @@
 ﻿using System.Threading.RateLimiting;
 using BattleTrace.Common;
-using MediatR;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
@@ -19,8 +18,8 @@ public static class Extensions
 
         group.MapGet(
             "",
-            async ([AsParameters] Index.Query query, ISender sender, CancellationToken cancellationToken)
-                => await sender.Send(query, cancellationToken)
+            async ([AsParameters] Index.Query query, Index.Handler handler, CancellationToken cancellationToken)
+                => await handler.HandleAsync(query, cancellationToken)
         );
 
         return group;
