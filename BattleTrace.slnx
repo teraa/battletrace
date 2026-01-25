@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Shared/">
+    <Project Path="Shared/AspNetCore/Shared.AspNetCore.csproj" />
+    <Project Path="Shared/Configuration.Vault/Shared.Configuration.Vault.csproj" />
+    <Project Path="Shared/Configuration/Shared.Configuration.csproj" />
+    <Project Path="Shared/Serilog.Seq/Shared.Serilog.Seq.csproj" />
+    <Project Path="Shared/Serilog.Systemd/Shared.Serilog.Systemd.csproj" />
+  </Folder>
+  <Project Path="BattleTrace.Tests/BattleTrace.Tests.csproj" />
+  <Project Path="BattleTrace/BattleTrace.csproj" />
+</Solution>
